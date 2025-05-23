@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print-PDF.com - Votre Imprimeur en Ligne</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Application Structure Plan: 
+        L'application est une SPA (Single Page Application) avec plusieurs sections accessibles via une barre de navigation fixe ou par défilement.
+        1. Accueil (Hero): Présentation et zone d'upload simulée.
+        2. Comment ça marche: Processus en 3 étapes.
+        3. Nos Avantages: Points forts du service.
+        4. Témoignages: Preuve sociale.
+        5. Devis Interactif: Section clé simulant la personnalisation et l'obtention d'un devis en temps réel. C'est le cœur de l'interactivité.
+        6. FAQ: Réponses aux questions fréquentes.
+        7. Contact: Informations de contact.
+        8. Footer: Liens légaux et informations.
+        Cette structure suit logiquement la description du site fournie, guidant l'utilisateur à travers l'offre de service de manière intuitive. L'accent est mis sur la simulation de l'expérience utilisateur, en particulier pour l'outil de devis.
+    -->
+    <!-- Visualization & Content Choices:
+        - Hero Section: Texte et une zone d'upload stylisée (simulation visuelle, pas de traitement de fichier réel). Objectif: Engager, Informer. Méthode: HTML/Tailwind, icône Unicode. Interaction: Effets de survol.
+        - Processus en 3 étapes: Blocs horizontaux avec icônes Unicode (📤, ⚙️, 🚚) et descriptions textuelles. Objectif: Informer, Organiser. Méthode: HTML/Tailwind.
+        - Avantages: Paires icône-texte (icônes Unicode: 🛡️, ⏰, 💬). Objectif: Persuader. Méthode: HTML/Tailwind.
+        - Témoignages: Blocs de citation simples. Objectif: Crédibilité. Méthode: HTML/Tailwind.
+        - Devis Interactif:
+            - Report Info: Aperçu PDF simulé, nombre de pages, options (quantité, couleur, recto/verso, papier, format, reliure), prix dynamique.
+            - Goal: Démontrer, Engager.
+            - Viz/Presentation Method: Formulaire interactif à deux colonnes (aperçu simulé à gauche, options à droite). L'aperçu sera un conteneur stylisé. Les options utiliseront des éléments de formulaire HTML standards (input[type=number], radios, selects). Le prix sera mis à jour dynamiquement via JS. Les reliures seront des cartes cliquables.
+            - Interaction: Sélection des options par l'utilisateur, mise à jour instantanée du prix. Logique JS pour calculer le prix et gérer la disponibilité des options de reliure (simplifié).
+            - Justification: Simule fidèlement l'expérience utilisateur décrite comme étant centrale au service.
+            - Library/Method: HTML/Tailwind, Vanilla JS.
+        - FAQ: Système d'accordéon. Objectif: Informer. Méthode: HTML/Tailwind, JS pour le basculement.
+        - Icônes: Utilisation de caractères Unicode et de styles Tailwind pour éviter SVG/images, conformément aux contraintes.
+        - Navigation: Barre de navigation fixe avec défilement doux vers les sections.
+        - Transparence des prix: Le devis affichera un total et une option (simulée) pour voir le détail.
+        - Nouvelle fonctionnalité Gemini API: Un bouton "Générer un résumé" dans la section Devis. Objectif: Informer, Engager. Méthode: HTML/Tailwind, Vanilla JS pour l'appel simulé à l'API Gemini et l'affichage du résultat. Justification: Ajoute une valeur ajoutée en simulant l'analyse de contenu d'un document.
+    -->
+    <style>
+        body { font-family: 'Open Sans', sans-serif; background-color: #F8F9FA; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #2B3A67; }
+        .hero-bg { background-color: #A8D8EA; }
+        .primary-bg { background-color: #2B3A67; }
+        .primary-text { color: #2B3A67; }
+        .accent-bg { background-color: #FF8C69; }
+        .accent-text { color: #FF8C69; }
+        .secondary-bg { background-color: #A8D8EA; }
+        .secondary-text { color: #A8D8EA; }
+        .smooth-scroll { scroll-behavior: smooth; }
+        .upload-area { border: 2px dashed #2B3A67; transition: background-color 0.3s ease; }
+        .upload-area.dragover { background-color: #d0eaf3; }
+        .custom-radio input[type="radio"] { display: none; }
+        .custom-radio label {
+            padding: 0.5rem 1rem;
+            border: 1px solid #A8D8EA;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        .custom-radio input[type="radio"]:checked + label {
+            background-color: #2B3A67;
+            color: white;
+            border-color: #2B3A67;
+        }
+        .binding-option {
+            border: 1px solid #A8D8EA;
+            transition: all 0.2s;
+        }
+        .binding-option.selected {
+            border-color: #2B3A67;
+            box-shadow: 0 0 0 2px #2B3A67;
+        }
+        .binding-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #e9ecef;
+        }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .accordion-item.open .accordion-content { max-height: 500px; } /* Adjust as needed */
+        .nav-item { transition: color 0.3s ease; }
+        .nav-item:hover { color: #FF8C69; }
+
+        /* Style for the dynamic price display */
+        #totalPriceContainer {
+            position: sticky;
+            top: 80px; /* Adjust based on nav height */
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="text-gray-700 smooth-scroll">
+
+    <header class="primary-bg text-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold">Print-PDF.com</a>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="#accueil" class="nav-item hover:secondary-text">Accueil</a></li>
+                    <li><a href="#comment-ca-marche" class="nav-item hover:secondary-text">Comment ça marche ?</a></li>
+                    <li><a href="#avantages" class="nav-item hover:secondary-text">Nos Avantages</a></li>
+                    <li><a href="#devis" class="nav-item hover:secondary-text">Devis</a></li>
+                    <li><a href="#faq" class="nav-item hover:secondary-text">FAQ</a></li>
+                    <li><a href="#contact" class="nav-item hover:secondary-text">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="accueil" class="hero-bg py-20">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-5xl font-bold mb-4 primary-text">Imprimez vos PDF en ligne.</h1>
+                <h2 class="text-3xl mb-8 primary-text">Simple, Rapide, Professionnel.</h2>
+                <p class="text-lg mb-10 text-gray-800">Transformez vos documents PDF en impressions de haute qualité sans effort. <br>Notre plateforme intuitive vous guide à chaque étape.</p>
+                <div id="dropZone" class="upload-area max-w-xl mx-auto p-10 rounded-lg bg-white shadow-lg">
+                    <div class="flex flex-col items-center">
+                        <span class="text-5xl mb-4 primary-text">📤</span>
+                        <p class="text-xl font-semibold primary-text mb-2">Glissez-déposez votre fichier PDF ici</p>
+                        <p class="text-gray-600 mb-4">ou</p>
+                        <button class="accent-bg text-white font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90 transition duration-150">
+                            Choisissez un fichier depuis votre ordinateur
+                        </button>
+                        <p class="text-sm text-gray-500 mt-4">Fichiers PDF uniquement. Taille max : 50 Mo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comment-ca-marche" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4 primary-text">L'impression de vos PDF, simplifiée.</h2>
+                <p class="text-center text-lg text-gray-600 mb-12">En seulement 3 étapes faciles, obtenez vos documents imprimés et livrés.</p>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="p-6 shadow-lg rounded-lg bg-gray-50">
+                        <span class="text-6xl mb-4 inline-block primary-text">①</span>
+                        <h3 class="text-2xl font-semibold mb-2 primary-text">Téléchargez</h3>
+                        <p class="text-gray-600">Importez votre fichier PDF en quelques clics ou par simple glisser-déposer.</p>
+                    </div>
+                    <div class="p-6 shadow-lg rounded-lg bg-gray-50">
+                        <span class="text-6xl mb-4 inline-block primary-text">②</span>
+                        <h3 class="text-2xl font-semibold mb-2 primary-text">Personnalisez</h3>
+                        <p class="text-gray-600">Choisissez vos options d'impression : format, papier, couleur, reliure, et plus encore.</p>
+                    </div>
+                    <div class="p-6 shadow-lg rounded-lg bg-gray-50">
+                        <span class="text-6xl mb-4 inline-block primary-text">③</span>
+                        <h3 class="text-2xl font-semibold mb-2 primary-text">Commandez</h3>
+                        <p class="text-gray-600">Validez votre devis instantané et recevez vos impressions où vous le souhaitez.</p>
+                    </div>
+                </div>
+                 <div class="w-full h-1 bg-gray-200 rounded-full mt-12 relative">
+                    <div class="absolute top-0 left-0 h-1 primary-bg rounded-full" style="width: 100%;"></div>
+                    <div class="absolute top-1/2 left-[16.66%] transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 primary-bg rounded-full"></div>
+                    <div class="absolute top-1/2 left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 primary-bg rounded-full"></div>
+                    <div class="absolute top-1/2 left-[83.33%] transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 primary-bg rounded-full"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="avantages" class="py-16 secondary-bg">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4 primary-text">Pourquoi choisir Print-PDF.com ?</h2>
+                <p class="text-center text-lg text-gray-800 mb-12">Nous nous engageons à vous offrir une expérience d'impression inégalée.</p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <span class="text-5xl mb-4 inline-block accent-text">🛡️</span>
+                        <h3 class="text-2xl font-semibold mb-2 primary-text">Qualité Professionnelle Garantie</h3>
+                        <p class="text-gray-600">Des impressions nettes et précises, avec des matériaux de premier choix pour un rendu impeccable.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <span class="text-5xl mb-4 inline-block accent-text">⏱️</span>
+                        <h3 class="text-2xl font-semibold mb-2 primary-text">Devis Instantané et Transparent</h3>
+                        <p class="text-gray-600">Obtenez votre prix en temps réel. Pas de surprises, une tarification claire et détaillée.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <span class="text-5xl mb-4 inline-block accent-text">💬</span>
+                        <h3 class="text-2xl font-semibold mb-2 primary-text">Service Client Dédié</h3>
+                        <p class="text-gray-600">Notre équipe est à votre écoute pour vous conseiller et vous accompagner à chaque étape.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="temoignages" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4 primary-text">Ils nous ont fait confiance</h2>
+                <p class="text-center text-lg text-gray-600 mb-12">Découvrez ce que nos clients pensent de notre service.</p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-lg">
+                        <p class="text-gray-700 italic mb-4">"Service incroyablement rapide et une qualité d'impression au top ! Le site est très facile à utiliser, même pour quelqu'un comme moi qui n'est pas très technique. Je recommande vivement Print-PDF.com."</p>
+                        <p class="font-semibold primary-text">- Sophie D., Graphiste Freelance</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-lg">
+                        <p class="text-gray-700 italic mb-4">"J'avais besoin d'imprimer des rapports pour une conférence en urgence. Print-PDF.com a sauvé la situation ! Le devis était instantané et la livraison pile à temps. La qualité était parfaite."</p>
+                        <p class="font-semibold primary-text">- Marc L., Chef de Projet</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="devis" class="py-16">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4 primary-text">Obtenez votre Devis Instantané</h2>
+                <p class="text-center text-lg text-gray-600 mb-12">Configurez vos options d'impression et visualisez le coût en temps réel. C'est simple et transparent.</p>
+                
+                <div class="bg-white p-8 rounded-lg shadow-xl md:flex md:space-x-8">
+                    <div class="md:w-1/3 mb-8 md:mb-0">
+                        <h3 class="text-2xl font-semibold mb-4 primary-text">Aperçu de votre document</h3>
+                        <div id="pdfPreview" class="w-full h-64 bg-gray-200 rounded-md flex items-center justify-center border border-gray-300">
+                            <p class="text-gray-500">Aperçu du PDF (simulé)</p>
+                        </div>
+                        <p id="fileName" class="mt-2 text-sm text-gray-600">Nom du fichier : exemple_document.pdf</p>
+                        <div class="mt-4">
+                            <label for="pageCount" class="block text-sm font-medium text-gray-700 mb-1">Nombre de pages détectées :</label>
+                            <input type="number" id="pageCount" name="pageCount" value="10" min="1" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="mt-6">
+                            <button id="generateSummaryBtn" class="w-full primary-bg text-white font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90 transition duration-150 flex items-center justify-center">
+                                <span class="mr-2">✨</span> Générer un résumé
+                            </button>
+                            <div id="summaryOutput" class="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200 hidden">
+                                <p id="summaryText" class="text-gray-700 italic"></p>
+                                <div id="summaryLoading" class="text-center hidden">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-text mx-auto"></div>
+                                    <p class="text-sm text-gray-600 mt-2">Génération du résumé...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:w-2/3">
+                        <h3 class="text-2xl font-semibold mb-4 primary-text">Options d'impression</h3>
+                        <form id="quoteForm" class="space-y-6">
+                            <div>
+                                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantité d'exemplaires :</label>
+                                <div class="flex items-center mt-1">
+                                    <button type="button" id="quantityMinus" class="p-2 border border-gray-300 rounded-l-md">-</button>
+                                    <input type="number" id="quantity" name="quantity" value="1" min="1" class="w-20 text-center p-2 border-t border-b border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <button type="button" id="quantityPlus" class="p-2 border border-gray-300 rounded-r-md">+</button>
+                                </div>
+                            </div>
+
+                            <div class="custom-radio">
+                                <p class="block text-sm font-medium text-gray-700 mb-1">Couleur d'impression :</p>
+                                <input type="radio" id="colorBW" name="printColor" value="bw" checked>
+                                <label for="colorBW"><span class="mr-1">⚫</span> Noir & Blanc</label>
+                                <input type="radio" id="colorColor" name="printColor" value="color">
+                                <label for="colorColor"><span class="mr-1">🎨</span> Couleur</label>
+                            </div>
+
+                            <div class="custom-radio">
+                                <p class="block text-sm font-medium text-gray-700 mb-1">Impression :</p>
+                                <input type="radio" id="printRecto" name="printSide" value="recto" checked>
+                                <label for="printRecto">Recto seul</label>
+                                <input type="radio" id="printRectoVerso" name="printSide" value="recto-verso">
+                                <label for="printRectoVerso">Recto-Verso</label>
+                            </div>
+                            
+                            <div>
+                                <label for="paperType" class="block text-sm font-medium text-gray-700">Type de Papier :</label>
+                                <select id="paperType" name="paperType" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="standard_80g" data-description="Idéal pour les documents courants">Standard 80g</option>
+                                    <option value="premium_100g" data-description="Pour une meilleure tenue et un rendu supérieur">Premium 100g</option>
+                                    <option value="extra_premium_120g" data-description="Excellente opacité et toucher de qualité">Extra Premium 120g</option>
+                                </select>
+                                <p id="paperDescription" class="mt-1 text-xs text-gray-500">Idéal pour les documents courants</p>
+                            </div>
+
+                            <div>
+                                <label for="format" class="block text-sm font-medium text-gray-700">Format :</label>
+                                <select id="format" name="format" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="A4">A4</option>
+                                    <option value="A5">A5</option>
+                                    <option value="A3">A3 (Non disponible pour toutes les reliures)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <p class="block text-sm font-medium text-gray-700 mb-2">Reliure :</p>
+                                <div id="bindingOptions" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                    <div class="binding-option p-4 rounded-md cursor-pointer text-center" data-value="aucune">
+                                        <span class="text-3xl block mb-1">📄</span> Sans reliure
+                                    </div>
+                                    <div class="binding-option p-4 rounded-md cursor-pointer text-center" data-value="spirale">
+                                        <span class="text-3xl block mb-1">🌀</span> Spirale
+                                        <span class="text-xs block text-gray-500">(min 5 pages)</span>
+                                    </div>
+                                    <div class="binding-option p-4 rounded-md cursor-pointer text-center" data-value="agrafes">
+                                        <span class="text-3xl block mb-1">📎</span> Agrafes
+                                        <span class="text-xs block text-gray-500">(2-60 pages)</span>
+                                    </div>
+                                    <div class="binding-option p-4 rounded-md cursor-pointer text-center" data-value="dos_carre_colle">
+                                        <span class="text-3xl block mb-1">📚</span> Dos carré collé
+                                        <span class="text-xs block text-gray-500">(min 40 pages)</span>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="selectedBinding" name="selectedBinding" value="aucune">
+                            </div>
+                            
+                            <div id="totalPriceContainer" class="mt-8 p-6 primary-bg text-white rounded-lg shadow-md">
+                                <h4 class="text-2xl font-semibold">Total Estimé :</h4>
+                                <p id="totalPrice" class="text-4xl font-bold">0.00 € TTC</p>
+                                <p id="priceDetails" class="text-sm mt-1 opacity-80 hover:opacity-100 cursor-pointer">Voir le détail du prix (simulé)</p>
+                            </div>
+
+                            <button type="submit" class="w-full accent-bg text-white font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 transition duration-150 mt-6">
+                                Ajouter au Panier et Commander
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-12 primary-text">Questions Fréquemment Posées</h2>
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <div class="accordion-item border border-gray-200 rounded-lg">
+                        <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold primary-text hover:bg-gray-50">
+                            Quels types de fichiers PDF sont acceptés ?
+                            <span class="accordion-icon text-xl transition-transform transform">+</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-gray-50 text-gray-700">
+                            Nous acceptons la plupart des fichiers PDF standards. Assurez-vous que vos polices sont incorporées et que les images ont une résolution suffisante (300 dpi recommandés) pour une qualité optimale. La taille maximale par fichier est de 50 Mo.
+                        </div>
+                    </div>
+                    <div class="accordion-item border border-gray-200 rounded-lg">
+                        <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold primary-text hover:bg-gray-50">
+                            Quels sont les délais de livraison ?
+                            <span class="accordion-icon text-xl transition-transform transform">+</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-gray-50 text-gray-700">
+                            Les délais de livraison varient en fonction des options choisies et de votre localisation. Une estimation du délai vous sera fournie lors de la validation de votre commande. Nous proposons également des options de livraison express.
+                        </div>
+                    </div>
+                     <div class="accordion-item border border-gray-200 rounded-lg">
+                        <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold primary-text hover:bg-gray-50">
+                            Puis-je modifier ma commande après validation ?
+                            <span class="accordion-icon text-xl transition-transform transform">+</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-gray-50 text-gray-700">
+                            Une fois votre commande validée et le paiement effectué, elle entre rapidement en production. Si vous souhaitez la modifier, contactez notre service client le plus rapidement possible. Selon l'avancement, nous verrons ce qu'il est possible de faire.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-16 secondary-bg">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold mb-4 primary-text">Contactez-Nous</h2>
+                <p class="text-lg text-gray-800 mb-8">Une question ? Besoin d'aide ? Notre équipe est là pour vous.</p>
+                <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-xl">
+                    <p class="mb-2"><strong>Email :</strong> <a href="mailto:contact@print-pdf.com" class="accent-text hover:underline">contact@print-pdf.com</a></p>
+                    <p class="mb-6"><strong>Téléphone :</strong> +33 1 23 45 67 89</p>
+                    <form class="space-y-4">
+                        <div>
+                            <input type="text" placeholder="Votre nom" class="w-full p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <input type="email" placeholder="Votre email" class="w-full p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <textarea placeholder="Votre message" rows="4" class="w-full p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        </div>
+                        <button type="submit" class="w-full accent-bg text-white font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 transition duration-150">
+                            Envoyer le Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="primary-bg text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="font-bold text-xl mb-2">Print-PDF.com</p>
+            <ul class="flex justify-center space-x-4 mb-4">
+                <li><a href="#" class="hover:secondary-text">Mentions Légales</a></li>
+                <li><a href="#" class="hover:secondary-text">CGV</a></li>
+                <li><a href="#" class="hover:secondary-text">Politique de Confidentialité</a></li>
+            </ul>
+            <div class="flex justify-center items-center space-x-2 mb-4 text-sm">
+                <span>Paiement Sécurisé</span>
+                <span class="text-2xl">💳</span> 
+                <span>(Visa, Mastercard, PayPal)</span>
+            </div>
+            <p class="text-sm">&copy; <span id="currentYear"></span> Print-PDF.com. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            const dropZone = document.getElementById('dropZone');
+            if (dropZone) {
+                dropZone.addEventListener('dragover', (event) => {
+                    event.preventDefault();
+                    dropZone.classList.add('dragover');
+                });
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.classList.remove('dragover');
+                });
+                dropZone.addEventListener('drop', (event) => {
+                    event.preventDefault();
+                    dropZone.classList.remove('dragover');
+                    if (event.dataTransfer.files.length > 0) {
+                        const fileNameDisplay = document.getElementById('fileName');
+                        if (fileNameDisplay) {
+                            fileNameDisplay.textContent = 'Nom du fichier : ' + event.dataTransfer.files[0].name;
+                        }
+                        showMessageBox('Fichier "' + event.dataTransfer.files[0].name + '" déposé (simulation). Redirection vers le devis...', 'info');
+                        window.location.hash = 'devis';
+                    }
+                });
+            }
+            
+            const quantityInput = document.getElementById('quantity');
+            const quantityPlus = document.getElementById('quantityPlus');
+            const quantityMinus = document.getElementById('quantityMinus');
+
+            if (quantityInput && quantityPlus && quantityMinus) {
+                quantityPlus.addEventListener('click', () => {
+                    quantityInput.value = parseInt(quantityInput.value) + 1;
+                    updatePrice();
+                });
+                quantityMinus.addEventListener('click', () => {
+                    if (parseInt(quantityInput.value) > 1) {
+                        quantityInput.value = parseInt(quantityInput.value) - 1;
+                        updatePrice();
+                    }
+                });
+            }
+            
+            const quoteForm = document.getElementById('quoteForm');
+            if (quoteForm) {
+                quoteForm.addEventListener('input', updatePrice);
+                quoteForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    showMessageBox('Commande ajoutée au panier (simulation).', 'success');
+                });
+            }
+
+            const paperTypeSelect = document.getElementById('paperType');
+            const paperDescriptionP = document.getElementById('paperDescription');
+            if (paperTypeSelect && paperDescriptionP) {
+                paperTypeSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    paperDescriptionP.textContent = selectedOption.dataset.description || '';
+                    updatePrice();
+                });
+            }
+            
+            const bindingOptionsContainer = document.getElementById('bindingOptions');
+            const selectedBindingInput = document.getElementById('selectedBinding');
+
+            if (bindingOptionsContainer && selectedBindingInput) {
+                const options = bindingOptionsContainer.querySelectorAll('.binding-option');
+                options.forEach(option => {
+                    option.addEventListener('click', function() {
+                        if (this.classList.contains('disabled')) return;
+                        
+                        options.forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+                        selectedBindingInput.value = this.dataset.value;
+                        updatePrice();
+                    });
+                });
+                // Set default selection
+                const defaultBinding = bindingOptionsContainer.querySelector('.binding-option[data-value="aucune"]');
+                if (defaultBinding) defaultBinding.classList.add('selected');
+
+            }
+            
+            updatePrice(); // Initial price calculation
+
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            accordionItems.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                const icon = item.querySelector('.accordion-icon');
+                header.addEventListener('click', () => {
+                    const isOpen = item.classList.toggle('open');
+                    icon.textContent = isOpen ? '-' : '+';
+                    icon.classList.toggle('rotate-180', !isOpen); // Optional: better icon rotation
+                });
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                         if (window.innerWidth < 768 && document.querySelector('header nav ul.flex')) { // Basic mobile check
+                            // Potentially close mobile menu here if it were open
+                        }
+                    }
+                });
+            });
+
+            // Gemini API Integration
+            const generateSummaryBtn = document.getElementById('generateSummaryBtn');
+            if (generateSummaryBtn) {
+                generateSummaryBtn.addEventListener('click', generateDocumentSummary);
+            }
+
+            async function generateDocumentSummary() {
+                const summaryOutput = document.getElementById('summaryOutput');
+                const summaryText = document.getElementById('summaryText');
+                const summaryLoading = document.getElementById('summaryLoading');
+
+                summaryOutput.classList.remove('hidden');
+                summaryText.textContent = '';
+                summaryLoading.classList.remove('hidden');
+
+                try {
+                    let chatHistory = [];
+                    const prompt = "Rédigez un résumé concis (environ 100 mots) d'un rapport d'entreprise typique, couvrant les points clés tels que les performances financières, les défis du marché, les innovations produit et les perspectives futures. Le ton doit être professionnel et informatif.";
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; 
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        summaryText.textContent = text;
+                    } else {
+                        summaryText.textContent = "Impossible de générer le résumé. Veuillez réessayer.";
+                    }
+                } catch (error) {
+                    console.error("Erreur lors de la génération du résumé:", error);
+                    summaryText.textContent = "Une erreur est survenue lors de la génération du résumé.";
+                } finally {
+                    summaryLoading.classList.add('hidden');
+                }
+            }
+
+            // Custom Message Box Function
+            function showMessageBox(message, type = 'info') {
+                let messageBox = document.getElementById('customMessageBox');
+                if (!messageBox) {
+                    messageBox = document.createElement('div');
+                    messageBox.id = 'customMessageBox';
+                    messageBox.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-lg text-white z-[1000] transition-opacity duration-300 opacity-0';
+                    document.body.appendChild(messageBox);
+                }
+
+                messageBox.textContent = message;
+                messageBox.classList.remove('bg-green-500', 'bg-red-500', 'bg-blue-500');
+                if (type === 'success') {
+                    messageBox.classList.add('bg-green-500');
+                } else if (type === 'error') {
+                    messageBox.classList.add('bg-red-500');
+                } else {
+                    messageBox.classList.add('bg-blue-500');
+                }
+
+                messageBox.classList.remove('opacity-0');
+                messageBox.classList.add('opacity-100');
+
+                setTimeout(() => {
+                    messageBox.classList.remove('opacity-100');
+                    messageBox.classList.add('opacity-0');
+                }, 3000);
+            }
+        });
+
+        function updatePrice() {
+            const pageCountInput = document.getElementById('pageCount');
+            const quantityInput = document.getElementById('quantity');
+            const printColorInput = document.querySelector('input[name="printColor"]:checked');
+            const printSideInput = document.querySelector('input[name="printSide"]:checked');
+            const paperTypeInput = document.getElementById('paperType');
+            const formatInput = document.getElementById('format');
+            const selectedBindingInput = document.getElementById('selectedBinding');
+            const totalPriceDisplay = document.getElementById('totalPrice');
+
+            if (!pageCountInput || !quantityInput || !printColorInput || !printSideInput || !paperTypeInput || !formatInput || !selectedBindingInput || !totalPriceDisplay) {
+                console.error("Un ou plusieurs éléments du formulaire de devis sont manquants.");
+                return;
+            }
+
+            let pageCount = parseInt(pageCountInput.value) || 0;
+            let quantity = parseInt(quantityInput.value) || 1;
+            let printColor = printColorInput.value;
+            let printSide = printSideInput.value;
+            let paperType = paperTypeInput.value;
+            let format = formatInput.value;
+            let binding = selectedBindingInput.value;
+
+            let basePricePerPage = 0.10; // Base N&B
+            if (printColor === 'color') {
+                basePricePerPage = 0.30; // Base Couleur
+            }
+
+            if (printSide === 'recto-verso') {
+                basePricePerPage *= 1.8; // Majoration pour recto-verso (un peu moins que x2)
+            }
+
+            let paperMultiplier = 1;
+            if (paperType === 'premium_100g') paperMultiplier = 1.2;
+            if (paperType === 'extra_premium_120g') paperMultiplier = 1.5;
+
+            let formatMultiplier = 1;
+            if (format === 'A5') formatMultiplier = 0.7;
+            if (format === 'A3') formatMultiplier = 2;
+
+
+            let bindingCost = 0;
+            const bindingOptions = document.querySelectorAll('#bindingOptions .binding-option');
+            bindingOptions.forEach(opt => opt.classList.remove('disabled')); // Reset disabled states
+
+            if (binding === 'spirale') {
+                if (pageCount < 5) {
+                    document.querySelector('.binding-option[data-value="spirale"]').classList.add('disabled');
+                    if (selectedBindingInput.value === 'spirale') selectedBindingInput.value = 'aucune'; // Fallback
+                } else {
+                    bindingCost = 1.50;
+                }
+            } else if (binding === 'agrafes') {
+                 if (pageCount < 2 || pageCount > 60) {
+                    document.querySelector('.binding-option[data-value="agrafes"]').classList.add('disabled');
+                     if (selectedBindingInput.value === 'agrafes') selectedBindingInput.value = 'aucune';
+                } else {
+                    bindingCost = 0.50 + (pageCount > 20 ? 0.30 : 0); // coût additionnel si > 20 pages
+                }
+            } else if (binding === 'dos_carre_colle') {
+                if (pageCount < 40) {
+                    document.querySelector('.binding-option[data-value="dos_carre_colle"]').classList.add('disabled');
+                    if (selectedBindingInput.value === 'dos_carre_colle') selectedBindingInput.value = 'aucune';
+                } else {
+                     bindingCost = 3.00 + (pageCount * 0.02); // Coût de base + par page
+                }
+            }
+            
+            // Re-check selected binding if it became disabled
+            const currentSelectedBindingElement = document.querySelector(`.binding-option[data-value="${selectedBindingInput.value}"]`);
+            if (currentSelectedBindingElement && currentSelectedBindingElement.classList.contains('disabled')) {
+                selectedBindingInput.value = 'aucune'; // Fallback to 'aucune'
+                binding = 'aucune'; // update local var
+                bindingCost = 0; // reset binding cost
+                document.querySelectorAll('#bindingOptions .binding-option').forEach(opt => opt.classList.remove('selected'));
+                const noBindingOpt = document.querySelector('.binding-option[data-value="aucune"]');
+                if (noBindingOpt) noBindingOpt.classList.add('selected');
+            }
+
+
+            let totalPagesPrinted = pageCount;
+            let priceForOneCopy = (totalPagesPrinted * basePricePerPage * paperMultiplier * formatMultiplier) + bindingCost;
+            let totalPrice = priceForOneCopy * quantity;
+            
+            totalPriceDisplay.textContent = totalPrice.toFixed(2) + ' € TTC';
+        }
+    </script>
+</body>
+</html>
