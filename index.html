@@ -1,670 +1,1124 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print-PDF.com - Votre Imprimeur en Ligne</title>
+    <title>مستكشف اتفاقية الشراكة</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Application Structure Plan: 
-        L'application est une SPA (Single Page Application) avec plusieurs sections accessibles via une barre de navigation fixe ou par défilement.
-        1. Accueil (Hero): Présentation et zone d'upload simulée.
-        2. Comment ça marche: Processus en 3 étapes.
-        3. Nos Avantages: Points forts du service.
-        4. Témoignages: Preuve sociale.
-        5. Devis Interactif: Section clé simulant la personnalisation et l'obtention d'un devis en temps réel. C'est le cœur de l'interactivité.
-        6. FAQ: Réponses aux questions fréquentes.
-        7. Contact: Informations de contact.
-        8. Footer: Liens légaux et informations.
-        Cette structure suit logiquement la description du site fournie, guidant l'utilisateur à travers l'offre de service de manière intuitive. L'accent est mis sur la simulation de l'expérience utilisateur, en particulier pour l'outil de devis.
+        The SPA will use a tabbed interface for easy navigation through the main themes of the convention.
+        Sections:
+        1.  الرئيسية (Overview): Introduction, parties, general objectives, and a visual chart of cooperation areas. Also includes new LLM features for overall key takeaways and terminology explanation.
+        2.  محاور التعاون (Cooperation Areas): Detailed interactive list of cooperation fields from Article 2, with a new LLM summarization feature.
+        3.  آليات التدخل والبحث (Intervention & R&D): Covers Article 3 (Expertise Intervention - procedures, timelines) and Article 4 (R&D Programs - strategic axes, IP), with a new LLM summarization feature.
+        4.  التكوين ونقل الكفاءات (Training & Skills Transfer): Details from Article 5 regarding training, internships, and joint events, with a new LLM summarization feature.
+        5.  الجوانب المالية والحوكمة (Financials & Governance): Summarizes Article 6 (Financial & Logistical Aspects) and Article 7 (Governance & Monitoring), with a new LLM summarization feature.
+        6.  أحكام عامة (General Provisions): Key points from Article 8 (Duration, Confidentiality, Dispute Resolution, etc.) presented in expandable sections.
+        This structure is chosen to break down the dense legal document into digestible, thematic sections, enhancing usability and understanding over a linear presentation. User flow will be guided by clear tabs, with interactive elements like accordions for detailed information.
+        Chatbot: A floating button to open a chat modal for Q&A about the convention content.
     -->
     <!-- Visualization & Content Choices:
-        - Hero Section: Texte et une zone d'upload stylisée (simulation visuelle, pas de traitement de fichier réel). Objectif: Engager, Informer. Méthode: HTML/Tailwind, icône Unicode. Interaction: Effets de survol.
-        - Processus en 3 étapes: Blocs horizontaux avec icônes Unicode (📤, ⚙️, 🚚) et descriptions textuelles. Objectif: Informer, Organiser. Méthode: HTML/Tailwind.
-        - Avantages: Paires icône-texte (icônes Unicode: 🛡️, ⏰, 💬). Objectif: Persuader. Méthode: HTML/Tailwind.
-        - Témoignages: Blocs de citation simples. Objectif: Crédibilité. Méthode: HTML/Tailwind.
-        - Devis Interactif:
-            - Report Info: Aperçu PDF simulé, nombre de pages, options (quantité, couleur, recto/verso, papier, format, reliure), prix dynamique.
-            - Goal: Démontrer, Engager.
-            - Viz/Presentation Method: Formulaire interactif à deux colonnes (aperçu simulé à gauche, options à droite). L'aperçu sera un conteneur stylisé. Les options utiliseront des éléments de formulaire HTML standards (input[type=number], radios, selects). Le prix sera mis à jour dynamiquement via JS. Les reliures seront des cartes cliquables.
-            - Interaction: Sélection des options par l'utilisateur, mise à jour instantanée du prix. Logique JS pour calculer le prix et gérer la disponibilité des options de reliure (simplifié).
-            - Justification: Simule fidèlement l'expérience utilisateur décrite comme étant centrale au service.
-            - Library/Method: HTML/Tailwind, Vanilla JS.
-        - FAQ: Système d'accordéon. Objectif: Informer. Méthode: HTML/Tailwind, JS pour le basculement.
-        - Icônes: Utilisation de caractères Unicode et de styles Tailwind pour éviter SVG/images, conformément aux contraintes.
-        - Navigation: Barre de navigation fixe avec défilement doux vers les sections.
-        - Transparence des prix: Le devis affichera un total et une option (simulée) pour voir le détail.
-        - Nouvelle fonctionnalité Gemini API: Un bouton "Générer un résumé" dans la section Devis. Objectif: Informer, Engager. Méthode: HTML/Tailwind, Vanilla JS pour l'appel simulé à l'API Gemini et l'affichage du résultat. Justification: Ajoute une valeur ajoutée en simulant l'analyse de contenu d'un document.
+        -   Overview (الرئيسية): Donut chart (Chart.js) visualizing the main cooperation areas (Article 2) to provide a quick scope overview. Text summaries for parties and objectives (Preamble, Article 1).
+            -   New LLM Feature: Button to extract overall key takeaways from the convention.
+            -   New LLM Feature: Input field and button to explain specific terms from the convention.
+        -   Cooperation Areas (محاور التعاون): Interactive list/cards for items in Article 2; clicking reveals more details (JS show/hide). Goal: Explore.
+            -   New LLM Feature: Button to summarize the section's content.
+        -   Intervention & R&D (آليات التدخل والبحث):
+            -   Expertise Intervention (Article 3): Request procedure as numbered steps (HTML/CSS). Timelines (24h, 5 days) as highlighted stats. Goal: Inform, Understand Process.
+            -   R&D Programs (Article 4): Strategic axes as a list. IP as an expandable text block. Goal: Inform.
+            -   New LLM Feature: Button to summarize the section's content.
+        -   Training & Skills (التكوين ونقل الكفاءات - Article 5): Descriptive text blocks for training types, internships. Goal: Inform.
+            -   New LLM Feature: Button to summarize the section's content.
+        -   Financials & Governance (الجوانب المالية والحوكمة - Articles 6 & 7): Summarized text for financial commitments. Committee structure and roles. Goal: Inform.
+            -   New LLM Feature: Button to summarize the section's content.
+        -   General Provisions (أحكام عامة - Article 8): Accordion sections for each provision (duration, confidentiality, etc.) for progressive disclosure. Goal: Inform, Reference.
+        -   All textual content will be summarized and rephrased from the source convention for clarity.
+        -   No SVG/Mermaid. Graphics via Chart.js (Canvas) and Tailwind/HTML for structure.
+        -   This approach prioritizes making the formal agreement accessible and understandable.
+        -   Chatbot: Textual Q&A powered by Gemini API, using the convention text as context.
     -->
     <style>
-        body { font-family: 'Open Sans', sans-serif; background-color: #F8F9FA; }
-        h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; color: #2B3A67; }
-        .hero-bg { background-color: #A8D8EA; }
-        .primary-bg { background-color: #2B3A67; }
-        .primary-text { color: #2B3A67; }
-        .accent-bg { background-color: #FF8C69; }
-        .accent-text { color: #FF8C69; }
-        .secondary-bg { background-color: #A8D8EA; }
-        .secondary-text { color: #A8D8EA; }
-        .smooth-scroll { scroll-behavior: smooth; }
-        .upload-area { border: 2px dashed #2B3A67; transition: background-color 0.3s ease; }
-        .upload-area.dragover { background-color: #d0eaf3; }
-        .custom-radio input[type="radio"] { display: none; }
-        .custom-radio label {
-            padding: 0.5rem 1rem;
-            border: 1px solid #A8D8EA;
+        body {
+            font-family: 'Tajawal', 'Inter', sans-serif; /* Added Tajawal as a preferred Arabic font */
+            background-color: #FFFAF0; /* bg-amber-50 / floralwhite */
+            color: #262626; /* text-neutral-800 */
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            background-color: #FFF7ED; /* bg-amber-100 */
+            color: #D97706; /* text-amber-600 */
+            border-radius: 0.5rem;
+            transition: background-color 0.3s, color 0.3s;
+            font-weight: 600;
+        }
+        .tab-button.active {
+            background-color: #F97316; /* bg-orange-500 */
+            color: white;
+        }
+        .tab-button:hover:not(.active) {
+            background-color: #FED7AA; /* bg-amber-200 */
+        }
+        .tab-content {
+            display: none;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-top: 1rem;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        h2 {
+            color: #C2410C; /* text-orange-700 */
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #FB923C; /* border-orange-400 */
+            padding-bottom: 0.5rem;
+        }
+        h3 {
+            color: #B45309; /* text-amber-700 */
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .accordion-header {
+            background-color: #FFFBEB; /* bg-amber-50 */
+            padding: 0.75rem;
+            border: 1px solid #FDE68A; /* border-amber-300 */
             border-radius: 0.375rem;
             cursor: pointer;
-            transition: background-color 0.2s, color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: #78350F; /* text-amber-800 */
+        }
+        .accordion-content {
+            display: none;
+            padding: 0.75rem;
+            border: 1px solid #FDE68A; /* border-amber-300 */
+            border-top: none;
+            border-radius: 0 0 0.375rem 0.375rem;
+            background-color: #FFFCF5;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px; /* Adjusted for donut chart */
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Adjusted for donut chart */
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .highlight-stat {
+            background-color: #FFF7ED; /* bg-amber-100 */
+            color: #D97706; /* text-amber-600 */
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: bold;
             display: inline-block;
-            margin-right: 0.5rem;
+            margin: 0.25rem;
         }
-        .custom-radio input[type="radio"]:checked + label {
-            background-color: #2B3A67;
-            color: white;
-            border-color: #2B3A67;
+        .card {
+            background-color: #FFFBEB; /* bg-amber-50 */
+            border: 1px solid #FDE68A; /* border-amber-300 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
         }
-        .binding-option {
-            border: 1px solid #A8D8EA;
-            transition: all 0.2s;
+        .card-content {
+            display: none;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed #FCD34D; /* border-amber-400 */
         }
-        .binding-option.selected {
-            border-color: #2B3A67;
-            box-shadow: 0 0 0 2px #2B3A67;
-        }
-        .binding-option.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background-color: #e9ecef;
-        }
-        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-        .accordion-item.open .accordion-content { max-height: 500px; } /* Adjust as needed */
-        .nav-item { transition: color 0.3s ease; }
-        .nav-item:hover { color: #FF8C69; }
+        /* Adding Tajawal font from Google Fonts for better Arabic rendering */
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
 
-        /* Style for the dynamic price display */
-        #totalPriceContainer {
-            position: sticky;
-            top: 80px; /* Adjust based on nav height */
-            z-index: 10;
+        /* Chatbot specific styles */
+        .chatbot-button {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: #F97316; /* bg-orange-500 */
+            color: white;
+            border-radius: 9999px; /* full rounded */
+            padding: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 1000;
+            transition: transform 0.2s ease-in-out;
+        }
+        .chatbot-button:hover {
+            transform: scale(1.05);
+        }
+        .chatbot-modal {
+            position: fixed;
+            bottom: 6rem; /* Above the button */
+            right: 1.5rem;
+            width: 90%;
+            max-width: 400px;
+            height: 70%;
+            max-height: 500px;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid #FDBA74; /* amber-300 */
+        }
+        .chatbot-header {
+            background-color: #F97316; /* orange-500 */
+            color: white;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+        .chatbot-close-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .chatbot-messages {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            background-color: #FFFCF5; /* light amber */
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .message-bubble {
+            max-width: 80%;
+            padding: 0.6rem 0.9rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .message-user {
+            background-color: #FDBA74; /* amber-300 */
+            color: #4A2C0A; /* dark amber text */
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+        .message-bot {
+            background-color: #FFF7ED; /* amber-100 */
+            color: #78350F; /* amber-800 */
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+        .chatbot-input-area {
+            display: flex;
+            padding: 0.75rem;
+            border-top: 1px solid #FDBA74; /* amber-300 */
+            background-color: #FFFBEB; /* amber-50 */
+        }
+        .chatbot-input {
+            flex-grow: 1;
+            padding: 0.6rem;
+            border: 1px solid #FCD34D; /* amber-400 */
+            border-radius: 0.5rem;
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+            background-color: white;
+            color: #262626;
+        }
+        .chatbot-send-button {
+            background-color: #F97316; /* orange-500 */
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: 600;
+        }
+        .chatbot-send-button:hover {
+            background-color: #EA580C; /* orange-600 */
+        }
+        .loading-indicator {
+            align-self: flex-start;
+            background-color: #E5E7EB; /* gray-200 */
+            color: #6B7280; /* gray-500 */
+            padding: 0.6rem 0.9rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            border-bottom-left-radius: 0;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        .llm-output-area {
+            background-color: #FFFBEB; /* bg-amber-50 */
+            border: 1px solid #FDE68A; /* border-amber-300 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            min-height: 50px;
+            display: none; /* Hidden by default */
+        }
+        .llm-output-area.active {
+            display: block;
+        }
+        .llm-output-area h4 {
+            font-weight: 600;
+            color: #B45309;
+            margin-bottom: 0.5rem;
         }
     </style>
 </head>
-<body class="text-gray-700 smooth-scroll">
+<body class="bg-amber-50 text-neutral-800">
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-6xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-orange-600">مستكشف اتفاقية الشراكة</h1>
+            <p class="text-lg text-amber-700 mt-2">نظرة تفاعلية على اتفاقية التعاون العلمي والتقني بين جامعة الشاذلي بن جديد - الطارف والمؤسسة الجزائرية للحوم الحمراء (ALVIAR)</p>
+        </header>
 
-    <header class="primary-bg text-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold">Print-PDF.com</a>
-            <nav>
-                <ul class="flex space-x-4">
-                    <li><a href="#accueil" class="nav-item hover:secondary-text">Accueil</a></li>
-                    <li><a href="#comment-ca-marche" class="nav-item hover:secondary-text">Comment ça marche ?</a></li>
-                    <li><a href="#avantages" class="nav-item hover:secondary-text">Nos Avantages</a></li>
-                    <li><a href="#devis" class="nav-item hover:secondary-text">Devis</a></li>
-                    <li><a href="#faq" class="nav-item hover:secondary-text">FAQ</a></li>
-                    <li><a href="#contact" class="nav-item hover:secondary-text">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+        <nav class="flex flex-wrap justify-center gap-2 mb-8">
+            <button class="tab-button active" onclick="openTab(event, 'overview')">الرئيسية</button>
+            <button class="tab-button" onclick="openTab(event, 'cooperationAreas')">محاور التعاون</button>
+            <button class="tab-button" onclick="openTab(event, 'interventionRnd')">آليات التدخل والبحث</button>
+            <button class="tab-button" onclick="openTab(event, 'trainingSkills')">التكوين ونقل الكفاءات</button>
+            <button class="tab-button" onclick="openTab(event, 'financeGovernance')">الجوانب المالية والحوكمة</button>
+            <button class="tab-button" onclick="openTab(event, 'generalProvisions')">أحكام عامة</button>
+        </nav>
 
-    <main>
-        <section id="accueil" class="hero-bg py-20">
-            <div class="container mx-auto px-6 text-center">
-                <h1 class="text-5xl font-bold mb-4 primary-text">Imprimez vos PDF en ligne.</h1>
-                <h2 class="text-3xl mb-8 primary-text">Simple, Rapide, Professionnel.</h2>
-                <p class="text-lg mb-10 text-gray-800">Transformez vos documents PDF en impressions de haute qualité sans effort. <br>Notre plateforme intuitive vous guide à chaque étape.</p>
-                <div id="dropZone" class="upload-area max-w-xl mx-auto p-10 rounded-lg bg-white shadow-lg">
-                    <div class="flex flex-col items-center">
-                        <span class="text-5xl mb-4 primary-text">📤</span>
-                        <p class="text-xl font-semibold primary-text mb-2">Glissez-déposez votre fichier PDF ici</p>
-                        <p class="text-gray-600 mb-4">ou</p>
-                        <button class="accent-bg text-white font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90 transition duration-150">
-                            Choisissez un fichier depuis votre ordinateur
-                        </button>
-                        <p class="text-sm text-gray-500 mt-4">Fichiers PDF uniquement. Taille max : 50 Mo.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="comment-ca-marche" class="py-16 bg-white">
-            <div class="container mx-auto px-6">
-                <h2 class="text-4xl font-bold text-center mb-4 primary-text">L'impression de vos PDF, simplifiée.</h2>
-                <p class="text-center text-lg text-gray-600 mb-12">En seulement 3 étapes faciles, obtenez vos documents imprimés et livrés.</p>
-                <div class="grid md:grid-cols-3 gap-8 text-center">
-                    <div class="p-6 shadow-lg rounded-lg bg-gray-50">
-                        <span class="text-6xl mb-4 inline-block primary-text">①</span>
-                        <h3 class="text-2xl font-semibold mb-2 primary-text">Téléchargez</h3>
-                        <p class="text-gray-600">Importez votre fichier PDF en quelques clics ou par simple glisser-déposer.</p>
-                    </div>
-                    <div class="p-6 shadow-lg rounded-lg bg-gray-50">
-                        <span class="text-6xl mb-4 inline-block primary-text">②</span>
-                        <h3 class="text-2xl font-semibold mb-2 primary-text">Personnalisez</h3>
-                        <p class="text-gray-600">Choisissez vos options d'impression : format, papier, couleur, reliure, et plus encore.</p>
-                    </div>
-                    <div class="p-6 shadow-lg rounded-lg bg-gray-50">
-                        <span class="text-6xl mb-4 inline-block primary-text">③</span>
-                        <h3 class="text-2xl font-semibold mb-2 primary-text">Commandez</h3>
-                        <p class="text-gray-600">Validez votre devis instantané et recevez vos impressions où vous le souhaitez.</p>
-                    </div>
-                </div>
-                 <div class="w-full h-1 bg-gray-200 rounded-full mt-12 relative">
-                    <div class="absolute top-0 left-0 h-1 primary-bg rounded-full" style="width: 100%;"></div>
-                    <div class="absolute top-1/2 left-[16.66%] transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 primary-bg rounded-full"></div>
-                    <div class="absolute top-1/2 left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 primary-bg rounded-full"></div>
-                    <div class="absolute top-1/2 left-[83.33%] transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 primary-bg rounded-full"></div>
-                </div>
-            </div>
-        </section>
-
-        <section id="avantages" class="py-16 secondary-bg">
-            <div class="container mx-auto px-6">
-                <h2 class="text-4xl font-bold text-center mb-4 primary-text">Pourquoi choisir Print-PDF.com ?</h2>
-                <p class="text-center text-lg text-gray-800 mb-12">Nous nous engageons à vous offrir une expérience d'impression inégalée.</p>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                        <span class="text-5xl mb-4 inline-block accent-text">🛡️</span>
-                        <h3 class="text-2xl font-semibold mb-2 primary-text">Qualité Professionnelle Garantie</h3>
-                        <p class="text-gray-600">Des impressions nettes et précises, avec des matériaux de premier choix pour un rendu impeccable.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                        <span class="text-5xl mb-4 inline-block accent-text">⏱️</span>
-                        <h3 class="text-2xl font-semibold mb-2 primary-text">Devis Instantané et Transparent</h3>
-                        <p class="text-gray-600">Obtenez votre prix en temps réel. Pas de surprises, une tarification claire et détaillée.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                        <span class="text-5xl mb-4 inline-block accent-text">💬</span>
-                        <h3 class="text-2xl font-semibold mb-2 primary-text">Service Client Dédié</h3>
-                        <p class="text-gray-600">Notre équipe est à votre écoute pour vous conseiller et vous accompagner à chaque étape.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <section id="temoignages" class="py-16 bg-white">
-            <div class="container mx-auto px-6">
-                <h2 class="text-4xl font-bold text-center mb-4 primary-text">Ils nous ont fait confiance</h2>
-                <p class="text-center text-lg text-gray-600 mb-12">Découvrez ce que nos clients pensent de notre service.</p>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="bg-gray-50 p-8 rounded-lg shadow-lg">
-                        <p class="text-gray-700 italic mb-4">"Service incroyablement rapide et une qualité d'impression au top ! Le site est très facile à utiliser, même pour quelqu'un comme moi qui n'est pas très technique. Je recommande vivement Print-PDF.com."</p>
-                        <p class="font-semibold primary-text">- Sophie D., Graphiste Freelance</p>
-                    </div>
-                    <div class="bg-gray-50 p-8 rounded-lg shadow-lg">
-                        <p class="text-gray-700 italic mb-4">"J'avais besoin d'imprimer des rapports pour une conférence en urgence. Print-PDF.com a sauvé la situation ! Le devis était instantané et la livraison pile à temps. La qualité était parfaite."</p>
-                        <p class="font-semibold primary-text">- Marc L., Chef de Projet</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="devis" class="py-16">
-            <div class="container mx-auto px-6">
-                <h2 class="text-4xl font-bold text-center mb-4 primary-text">Obtenez votre Devis Instantané</h2>
-                <p class="text-center text-lg text-gray-600 mb-12">Configurez vos options d'impression et visualisez le coût en temps réel. C'est simple et transparent.</p>
+        <main>
+            <div id="overview" class="tab-content active">
+                <h2>نظرة عامة على الاتفاقية</h2>
+                <p class="mb-4">تهدف هذه الاتفاقية الإطارية إلى تحديد أسس التعاون والشراكة الاستراتيجية بين جامعة الشاذلي بن جديد - الطارف والمؤسسة الجزائرية للحوم الحمراء (ALVIAR). يسعى الطرفان من خلالها إلى تعزيز قطاع اللحوم الحمراء في الجزائر، تحقيق الأمن الغذائي، وتثمين مخرجات البحث العلمي لخدمة التنمية المستدامة.</p>
                 
-                <div class="bg-white p-8 rounded-lg shadow-xl md:flex md:space-x-8">
-                    <div class="md:w-1/3 mb-8 md:mb-0">
-                        <h3 class="text-2xl font-semibold mb-4 primary-text">Aperçu de votre document</h3>
-                        <div id="pdfPreview" class="w-full h-64 bg-gray-200 rounded-md flex items-center justify-center border border-gray-300">
-                            <p class="text-gray-500">Aperçu du PDF (simulé)</p>
-                        </div>
-                        <p id="fileName" class="mt-2 text-sm text-gray-600">Nom du fichier : exemple_document.pdf</p>
-                        <div class="mt-4">
-                            <label for="pageCount" class="block text-sm font-medium text-gray-700 mb-1">Nombre de pages détectées :</label>
-                            <input type="number" id="pageCount" name="pageCount" value="10" min="1" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                        <div class="mt-6">
-                            <button id="generateSummaryBtn" class="w-full primary-bg text-white font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90 transition duration-150 flex items-center justify-center">
-                                <span class="mr-2">✨</span> Générer un résumé
-                            </button>
-                            <div id="summaryOutput" class="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200 hidden">
-                                <p id="summaryText" class="text-gray-700 italic"></p>
-                                <div id="summaryLoading" class="text-center hidden">
-                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-text mx-auto"></div>
-                                    <p class="text-sm text-gray-600 mt-2">Génération du résumé...</p>
-                                </div>
-                            </div>
-                        </div>
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h3>الأطراف المتعاقدة</h3>
+                        <p><strong>الجامعة:</strong> جامعة الشاذلي بن جديد - الطارف، الكائن مقرها بـ: ص.ب 73، ولاية الطارف، الرمز البريدي 36000، الممثلة قانونًا من طرف مديرها، الأستاذ الدكتور بن شهرة شول.</p>
+                        <p><strong>المؤسسة:</strong> المؤسسة الجزائرية للحوم الحمراء (ALVIAR)، شركة ذات أسهم، رأسمالها ............ دينار جزائري، مقيدة بالسجل التجاري لولاية ............ تحت رقم ............، الكائن مقرها الاجتماعي بـ: ..........................، الممثلة قانونًا من طرف مديرها العام، السيد .......................... .</p>
+                        
+                        <h3 class="mt-4">الأهداف العامة (البند الأول)</h3>
+                        <p class="mb-2">تهدف هذه الاتفاقية إلى تحديد إطار عام للتعاون والشراكة الاستراتيجية بين الطرفين في المجالات ذات الاهتمام المشترك، مع التركيز على الموضوعات التالية:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>تطوير معايير الصحة الحيوانية والسلامة الغذائية.</li>
+                            <li>تحسين الكفاءة التشغيلية والحد من الهدر.</li>
+                            <li>تدريب الكوادر وتأهيلهم وفق أحدث المعايير.</li>
+                            <li>تبادل البيانات والخبرات لتعزيز البحث التطبيقي.</li>
+                            <li>تقديم خدمات استشارية وصحية.</li>
+                        </ul>
                     </div>
-
-                    <div class="md:w-2/3">
-                        <h3 class="text-2xl font-semibold mb-4 primary-text">Options d'impression</h3>
-                        <form id="quoteForm" class="space-y-6">
-                            <div>
-                                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantité d'exemplaires :</label>
-                                <div class="flex items-center mt-1">
-                                    <button type="button" id="quantityMinus" class="p-2 border border-gray-300 rounded-l-md">-</button>
-                                    <input type="number" id="quantity" name="quantity" value="1" min="1" class="w-20 text-center p-2 border-t border-b border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
-                                    <button type="button" id="quantityPlus" class="p-2 border border-gray-300 rounded-r-md">+</button>
-                                </div>
-                            </div>
-
-                            <div class="custom-radio">
-                                <p class="block text-sm font-medium text-gray-700 mb-1">Couleur d'impression :</p>
-                                <input type="radio" id="colorBW" name="printColor" value="bw" checked>
-                                <label for="colorBW"><span class="mr-1">⚫</span> Noir & Blanc</label>
-                                <input type="radio" id="colorColor" name="printColor" value="color">
-                                <label for="colorColor"><span class="mr-1">🎨</span> Couleur</label>
-                            </div>
-
-                            <div class="custom-radio">
-                                <p class="block text-sm font-medium text-gray-700 mb-1">Impression :</p>
-                                <input type="radio" id="printRecto" name="printSide" value="recto" checked>
-                                <label for="printRecto">Recto seul</label>
-                                <input type="radio" id="printRectoVerso" name="printSide" value="recto-verso">
-                                <label for="printRectoVerso">Recto-Verso</label>
-                            </div>
-                            
-                            <div>
-                                <label for="paperType" class="block text-sm font-medium text-gray-700">Type de Papier :</label>
-                                <select id="paperType" name="paperType" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="standard_80g" data-description="Idéal pour les documents courants">Standard 80g</option>
-                                    <option value="premium_100g" data-description="Pour une meilleure tenue et un rendu supérieur">Premium 100g</option>
-                                    <option value="extra_premium_120g" data-description="Excellente opacité et toucher de qualité">Extra Premium 120g</option>
-                                </select>
-                                <p id="paperDescription" class="mt-1 text-xs text-gray-500">Idéal pour les documents courants</p>
-                            </div>
-
-                            <div>
-                                <label for="format" class="block text-sm font-medium text-gray-700">Format :</label>
-                                <select id="format" name="format" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="A4">A4</option>
-                                    <option value="A5">A5</option>
-                                    <option value="A3">A3 (Non disponible pour toutes les reliures)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <p class="block text-sm font-medium text-gray-700 mb-2">Reliure :</p>
-                                <div id="bindingOptions" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                    <div class="binding-option p-4 rounded-md cursor-pointer text-center" data-value="aucune">
-                                        <span class="text-3xl block mb-1">📄</span> Sans reliure
-                                    </div>
-                                    <div class="binding-option p-4 rounded-md cursor-pointer text-center" data-value="spirale">
-                                        <span class="text-3xl block mb-1">🌀</span> Spirale
-                                        <span class="text-xs block text-gray-500">(min 5 pages)</span>
-                                    </div>
-                                    <div class="binding-option p-4 rounded-md cursor-pointer text-center" data-value="agrafes">
-                                        <span class="text-3xl block mb-1">📎</span> Agrafes
-                                        <span class="text-xs block text-gray-500">(2-60 pages)</span>
-                                    </div>
-                                    <div class="binding-option p-4 rounded-md cursor-pointer text-center" data-value="dos_carre_colle">
-                                        <span class="text-3xl block mb-1">📚</span> Dos carré collé
-                                        <span class="text-xs block text-gray-500">(min 40 pages)</span>
-                                    </div>
-                                </div>
-                                <input type="hidden" id="selectedBinding" name="selectedBinding" value="aucune">
-                            </div>
-                            
-                            <div id="totalPriceContainer" class="mt-8 p-6 primary-bg text-white rounded-lg shadow-md">
-                                <h4 class="text-2xl font-semibold">Total Estimé :</h4>
-                                <p id="totalPrice" class="text-4xl font-bold">0.00 € TTC</p>
-                                <p id="priceDetails" class="text-sm mt-1 opacity-80 hover:opacity-100 cursor-pointer">Voir le détail du prix (simulé)</p>
-                            </div>
-
-                            <button type="submit" class="w-full accent-bg text-white font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 transition duration-150 mt-6">
-                                Ajouter au Panier et Commander
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="faq" class="py-16 bg-white">
-            <div class="container mx-auto px-6">
-                <h2 class="text-4xl font-bold text-center mb-12 primary-text">Questions Fréquemment Posées</h2>
-                <div class="max-w-3xl mx-auto space-y-4">
-                    <div class="accordion-item border border-gray-200 rounded-lg">
-                        <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold primary-text hover:bg-gray-50">
-                            Quels types de fichiers PDF sont acceptés ?
-                            <span class="accordion-icon text-xl transition-transform transform">+</span>
-                        </button>
-                        <div class="accordion-content p-4 bg-gray-50 text-gray-700">
-                            Nous acceptons la plupart des fichiers PDF standards. Assurez-vous que vos polices sont incorporées et que les images ont une résolution suffisante (300 dpi recommandés) pour une qualité optimale. La taille maximale par fichier est de 50 Mo.
-                        </div>
-                    </div>
-                    <div class="accordion-item border border-gray-200 rounded-lg">
-                        <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold primary-text hover:bg-gray-50">
-                            Quels sont les délais de livraison ?
-                            <span class="accordion-icon text-xl transition-transform transform">+</span>
-                        </button>
-                        <div class="accordion-content p-4 bg-gray-50 text-gray-700">
-                            Les délais de livraison varient en fonction des options choisies et de votre localisation. Une estimation du délai vous sera fournie lors de la validation de votre commande. Nous proposons également des options de livraison express.
-                        </div>
-                    </div>
-                     <div class="accordion-item border border-gray-200 rounded-lg">
-                        <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold primary-text hover:bg-gray-50">
-                            Puis-je modifier ma commande après validation ?
-                            <span class="accordion-icon text-xl transition-transform transform">+</span>
-                        </button>
-                        <div class="accordion-content p-4 bg-gray-50 text-gray-700">
-                            Une fois votre commande validée et le paiement effectué, elle entre rapidement en production. Si vous souhaitez la modifier, contactez notre service client le plus rapidement possible. Selon l'avancement, nous verrons ce qu'il est possible de faire.
+                    <div>
+                        <h3>مجالات التعاون الرئيسية (نظرة سريعة)</h3>
+                        <p class="mb-2">تتضمن الاتفاقية عدة محاور للتعاون، يتم تمثيلها بصريًا أدناه:</p>
+                        <div class="chart-container">
+                            <canvas id="cooperationAreasChart"></canvas>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <section id="contact" class="py-16 secondary-bg">
-            <div class="container mx-auto px-6 text-center">
-                <h2 class="text-4xl font-bold mb-4 primary-text">Contactez-Nous</h2>
-                <p class="text-lg text-gray-800 mb-8">Une question ? Besoin d'aide ? Notre équipe est là pour vous.</p>
-                <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-xl">
-                    <p class="mb-2"><strong>Email :</strong> <a href="mailto:contact@print-pdf.com" class="accent-text hover:underline">contact@print-pdf.com</a></p>
-                    <p class="mb-6"><strong>Téléphone :</strong> +33 1 23 45 67 89</p>
-                    <form class="space-y-4">
-                        <div>
-                            <input type="text" placeholder="Votre nom" class="w-full p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <input type="email" placeholder="Votre email" class="w-full p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <textarea placeholder="Votre message" rows="4" class="w-full p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                        </div>
-                        <button type="submit" class="w-full accent-bg text-white font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 transition duration-150">
-                            Envoyer le Message
+                <h3>الإطار القانوني (مقتطفات من الديباجة)</h3>
+                <p>تستند الاتفاقية إلى مجموعة من النصوص القانونية والتنظيمية السارية المفعول في الدولة، منها:</p>
+                <ul class="list-disc list-inside mt-2 space-y-1 text-sm">
+                    <li><a href="https://www.mesrs.dz/index.php/textes-juridiques-ar/chapitre2-ar/" target="_blank" class="text-blue-600 hover:underline">القانون رقم 99-05 المتضمن القانون التوجيهي للتعليم العالي.</a></li>
+                    <li><a href="https://www.wipo.int/wipolex/ar/legislation/details/19645" target="_blank" class="text-blue-600 hover:underline">القانون رقم 15-21 المتضمن القانون التوجيهي حول البحث العلمي والتطوير التكنولوجي.</a></li>
+                    <li><a href="https://snapsydz.org/09-02-21-06-22-23html" target="_blank" class="text-blue-600 hover:underline">المرسوم التنفيذي رقم 01-293 الذي يحدد مهام الجامعة والقواعد الخاصة بتنظيمها وسيرها.</a></li>
+                    <li><a href="https://dcwguelma.dz/index.php/lois" target="_blank" class="text-blue-600 hover:underline">القانون رقم 88-08 المتعلق بنشاطات الطب البيطري وحماية صحة الحيوان.</a></li>
+                    <li>القوانين والأنظمة المتعلقة بالصحة الحيوانية، وسلامة الأغذية في الجزائر.</li>
+                    <li><a href="https://www.wipo.int/wipolex/ar/legislation/details/1194" target="_blank" class="text-blue-600 hover:underline">الأمر رقم 03-05 المتعلق بحقوق المؤلف والحقوق المجاورة.</a></li>
+                    <li><a href="https://www.wipo.int/wipolex/ar/legislation/details/1199" target="_blank" class="text-blue-600 hover:underline">الأمر رقم 03-07 المتعلق ببراءات الاختراع.</a></li>
+                    <li>الأطر والتشريعات القانونية والتنظيمية ذات الصلة بالشراكة بين الجامعة والمؤسسة.</li>
+                </ul>
+
+                <hr class="my-6 border-amber-300">
+
+                <section>
+                    <h3>✨ أدوات الذكاء الاصطناعي لفهم الاتفاقية</h3>
+                    <button class="llm-button bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors mb-4" onclick="generateKeyTakeaways()">✨ استخراج النقاط الرئيسية للاتفاقية</button>
+                    <div id="keyTakeawaysOutput" class="llm-output-area">
+                        <h4>النقاط الرئيسية للاتفاقية:</h4>
+                        <div id="keyTakeawaysContent"></div>
+                    </div>
+
+                    <h4 class="font-semibold mt-4 mb-2">✨ شرح مصطلح:</h4>
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="termExplainerInput" class="flex-grow p-2 border border-amber-400 rounded-md" placeholder="اكتب المصطلح هنا...">
+                        <button class="llm-button bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors" onclick="explainTerm()">✨ شرح المصطلح</button>
+                    </div>
+                    <div id="termExplainerOutput" class="llm-output-area">
+                        <h4>شرح المصطلح:</h4>
+                        <div id="termExplainerContent"></div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="cooperationAreas" class="tab-content">
+                <h2>محاور التعاون (البند الثاني)</h2>
+                <p class="mb-4">تحدد المادة الثانية من الاتفاقية مجالات التعاون الرئيسية بين الجامعة والمؤسسة. انقر على كل محور لمعرفة المزيد من التفاصيل.</p>
+                <button class="llm-button bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors mb-4" onclick="summarizeSection('cooperationAreas')">✨ تلخيص القسم</button>
+                <div id="cooperationAreasSummary" class="llm-output-area">
+                    <h4>ملخص القسم:</h4>
+                    <div id="cooperationAreasSummaryContent"></div>
+                </div>
+                <div id="cooperationCardsContainer" class="space-y-3">
+                    </div>
+            </div>
+
+            <div id="interventionRnd" class="tab-content">
+                <h2>آليات التدخل والبحث والتطوير</h2>
+                <p class="mb-4">يوضح هذا القسم كيفية تدخل الخبرات الجامعية لدعم المؤسسة، بالإضافة إلى إطار برامج البحث والتطوير المشتركة.</p>
+                <button class="llm-button bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors mb-4" onclick="summarizeSection('interventionRnd')">✨ تلخيص القسم</button>
+                <div id="interventionRndSummary" class="llm-output-area">
+                    <h4>ملخص القسم:</h4>
+                    <div id="interventionRndSummaryContent"></div>
+                </div>
+                <section>
+                    <h3>آليات تدخل الخبرة العلمية والبيطرية (البند الثالث)</h3>
+                    <p><strong>توفير الخبراء:</strong> تلتزم الجامعة بتوفير أساتذة باحثين، باحثين، وطلبة دكتوراه مؤهلين في الطب البيطري والمجالات ذات الصلة لتقديم خدمات الخبرة والاستشارة للمؤسسة.</p>
+                    
+                    <h4 class="font-semibold mt-3 mb-1">إجراءات طلب التدخل:</h4>
+                    <ol class="list-decimal list-inside space-y-1">
+                        <li>تقدم المؤسسة طلباً رسمياً إلى إدارة الجامعة.</li>
+                        <li>يجب أن يوضح الطلب طبيعة الإشكالية، الأهداف، والمعلومات التقنية ذات الصلة.</li>
+                        <li>تقوم الجامعة، عبر لجنة التوجيه والمتابعة، بتقييم الطلب واقتراح خطة عمل في الآجال المناسبة.</li>
+                    </ol>
+
+                    <h4 class="font-semibold mt-3 mb-1">آجال التدخل:</h4>
+                    <p>
+                        تلتزم الجامعة بالتدخل في <span class="highlight-stat">أقرب الآجال</span> في الحالات الطارئة والمثبتة التي تستدعي استجابة فورية.
+                        <br>
+                        بالنسبة للتدخلات المبرمجة، يتم تحديد الآجال بالاتفاق بين الطرفين.
+                        <br>
+                        يمكن دراسة نظام مناوبة (Astreinte) للخبراء البيطريين من الجامعة.
+                    </p>
+
+                    <h4 class="font-semibold mt-3 mb-1">تقارير التدخل والمتابعة:</h4>
+                    <p>يقدم فريق خبراء الجامعة تقريراً مفصلاً بعد كل تدخل خلال <span class="highlight-stat">خمسة عشر (15) يوم عمل</span>، يتضمن التشخيص، التوصيات، والإجراءات المقترحة. يمكن الاتفاق على آليات للمتابعة.</p>
+                </section>
+
+                <hr class="my-6 border-amber-300">
+
+                <section>
+                    <h3>برامج البحث والتطوير المشتركة (البند الرابع)</h3>
+                    <h4 class="font-semibold mb-1">المحاور الاستراتيجية للبحث والتطوير:</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>التوصيف الوراثي للسلالات المحلية وتحسينها.</li>
+                        <li>تثمين الموارد العلفية المحلية وغير التقليدية.</li>
+                        <li>تطوير طرق تشخيص سريعة ولقاحات فعالة.</li>
+                        <li>دراسات حول جودة اللحوم ومعاييرها.</li>
+                        <li>تطوير أنظمة تتبع مسار المنتجات.</li>
+                        <li>تحسين ظروف رفاهية الحيوان.</li>
+                        <li>تثمين المخلفات الحيوانية ومعالجة مياه الصرف.</li>
+                        <li>دراسات اقتصاديات الإنتاج والتسويق.</li>
+                    </ul>
+                    <p class="mt-2">يتم تجسيد كل مشروع بحث من خلال ملاحق خاصة تحدد الأهداف، المنهجية، الجدول الزمني، الميزانية، والمسؤوليات.</p>
+                    
+                    <h4 class="font-semibold mt-3 mb-1">الملكية الفكرية وتثمين النتائج:</h4>
+                     <div class="accordion-item">
+                        <button class="accordion-header w-full text-right">
+                            <span>تفاصيل الملكية الفكرية</span>
+                            <span class="accordion-icon transform transition-transform duration-300 ">▼</span>
                         </button>
-                    </form>
+                        <div class="accordion-content">
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>تخضع حقوق الملكية الفكرية الناتجة عن المشاريع المشتركة (براءات اختراع، برمجيات، نماذج صناعية، منشورات علمية، إلخ) للقوانين الجزائرية (الأمر 03-05 و 03-07).</li>
+                                <li>يتم تحديد ملكية النتائج البحثية وتوزيع الحقوق بشكل عادل في كل ملحق مشروع.</li>
+                                <li>يتفق الطرفان على آليات حماية وتثمين النتائج والاستغلال التجاري.</li>
+                                <li>تحتفظ الجامعة بحق النشر العلمي مع مراعاة حماية الأسرار الصناعية والتجارية للمؤسسة و/أو أي اتفاقيات ولاحق مبرمة.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="trainingSkills" class="tab-content">
+                <h2>التكوين، نقل الكفاءات، والإدماج المهني (البند الخامس)</h2>
+                <p class="mb-4">تركز هذه المادة على تعزيز القدرات البشرية من خلال برامج تكوينية متخصصة، تربصات للطلبة، والتظاهرات العلمية.</p>
+                <button class="llm-button bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors mb-4" onclick="summarizeSection('trainingSkills')">✨ تلخيص القسم</button>
+                <div id="trainingSkillsSummary" class="llm-output-area">
+                    <h4>ملخص القسم:</h4>
+                    <div id="trainingSkillsSummaryContent"></div>
+                </div>
+                <h3>برامج تكوينية تأهيلية (5.1)</h3>
+                <p>تلتزم الجامعة، بالتشاور مع المؤسسة، بتصميم وتطوير برامج تكوين مستمر مصممة خصيصاً (دورات قصيرة، ورشات عمل متخصصة) لفائدة إطارات وعمال المؤسسة لتحديث معارفهم ومهاراتهم.</p>
+
+                <h3>التربصات والأطروحات داخل المؤسسة (5.2)</h3>
+                <p>تشجع الجامعة وتسهل استقبال المؤسسة لطلبة (ليسانس، ماستر، دكتوراه بيطرة، دكتوراه الطور الثالث) لإجراء تربصات ميدانية أو إعداد أطروحات تخرج تتناول إشكاليات واقعية للمؤسسة. تلتزم المؤسسة بتوفر التأطير وظروف العمل المناسبة، والوصول إلى البيانات والمعلومات الضرورية (مع مراعاة الملكية الفكرية).</p>
+
+                <h3>التظاهرات العلمية والتوعوية المشتركة (5.3)</h3>
+                <p>يشجع الطرفان على التنظيم المشترك لأيام دراسية، ملتقيات علمية، ورشات عمل تطبيقية، ومعارض متخصصة، أيام توعوية وتحسيسية بهدف تبادل الخبرات، نشر المعارف الجديدة، وعرض النتائج البحثية المشتركة على نطاق أوسع.</p>
+            </div>
+            
+            <div id="financeGovernance" class="tab-content">
+                <h2>الجوانب المالية، المادية، واللوجستية، وحوكمة الشراكة</h2>
+                <p class="mb-4">يتناول هذا القسم الترتيبات المالية والمادية اللازمة لتنفيذ الاتفاقية، بالإضافة إلى آليات الحوكمة والمتابعة لضمان نجاح الشراكة.</p>
+                <button class="llm-button bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors mb-4" onclick="summarizeSection('financeGovernance')">✨ تلخيص القسم</button>
+                <div id="financeGovernanceSummary" class="llm-output-area">
+                    <h4>ملخص القسم:</h4>
+                    <div id="financeGovernanceSummaryContent"></div>
+                </div>
+                <section>
+                    <h3>الجوانب المالية، المادية، واللوجستية (البند السادس)</h3>
+                    <h4 class="font-semibold mb-1">الترتيبات المالية المفصلة:</h4>
+                    <p>يتم تحديد الأعباء المالية للخدمات (خبرة، تكوين، بحث) بموجب ملحق مالي أو اتفاقيات تطبيقية خاصة، تحدد جداول التسعير وكيفيات الدفع وفقاً للتنظيمات المحاسبية والمالية المعمول بها في القانون الجزائري. يمكن أن تكون مساهمة المؤسسة مالية، عينية، أو بشرية.</p>
+                    
+                    <h4 class="font-semibold mt-3 mb-1">توفير الموارد المادية واللوجستية:</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>تلتزم المؤسسة بتغطية مصاريف تنقل وإقامة خبراء الجامعة وتوفير التسهيلات اللوجستية.</li>
+                        <li>تلتزم الجامعة بتوظيف مختبراتها وتجهيزاتها المتخصصة، ومنصاتها التكنولوجية، في خدمة المؤسسة وفقاً للضوابط الداخلية المعمول بها وبعد اتفاق مسبق يحدد شروط الاستخدام.</li>
+                    </ul>
+
+                    <h4 class="font-semibold mt-3 mb-1">البحث المشترك عن مصادر التمويل:</h4>
+                    <p>يلتزم الطرفان بالبحث المشترك عن فرص تمويل للمشاريع لدى الهيئات الوطنية (مثل المديرية العامة للبحث العلمي والتطوير التكنولوجي DGRSDT، الصندوق الوطني للبحث العلمي، وزارة الفلاحة والتنمية الريفية، الوكالة الوطنية لترقية وتطوير البحث العلمي) والدولية.</p>
+                </section>
+
+                <hr class="my-6 border-amber-300">
+                
+                <section>
+                    <h3>حوكمة ومتابعة الشراكة (البند السابع)</h3>
+                    <h4 class="font-semibold mb-1">لجنة توجيه ومتابعة مشتركة:</h4>
+                    <p>تُشكل لجنة توجيه ومتابعة مشتركة تتكون من <span class="highlight-stat">06 أشخاص</span> من ممثلي الطرفين، ثلاثة ممثلين عن كل طرف. يفضل أن يكون الممثلون من ذوي المناصب القيادية والخبرة الفنية. مهامها تشمل:</p>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>السهر على حسن تنفيذ الاتفاقية وملاحقها.</li>
+                        <li>تحديد الأولويات والمصادقة على خطط العمل والمشاريع.</li>
+                        <li>التقييم الدوري للأنشطة والنتائج.</li>
+                        <li>اقتراح تعديلات أو تحسينات.</li>
+                        <li>الفصل في الصعوبات بالطرق الودية.</li>
+                        <li>العمل كقوة اقتراح لتطوير مجالات تعاون جديدة.</li>
+                    </ul>
+
+                    <h4 class="font-semibold mt-3 mb-1">وتيرة الاجتماعات والتقارير:</h4>
+                    <p>تجتمع اللجنة مرتين (02) سنوياً على الأقل، وكلما دعت الضرورة. يتم إعداد محاضر للاجتماعات وتقديم تقارير نشاط دورية.</p>
+
+                    <h4 class="font-semibold mt-3 mb-1">منسق الاتفاقية:</h4>
+                    <p>يعين كل طرف منسقًا مسؤولاً عن تسهيل التواصل اليومي والتنسيق العملياتي.</p>
+                </section>
+            </div>
+
+            <div id="generalProvisions" class="tab-content">
+                <h2>أحكام عامة (البند الثامن والتاسع)</h2>
+                <p class="mb-4">تتضمن هذه المواد البنود القانونية والتنظيمية التي تحكم سريان الاتفاقية، تجديدها، سريتها، وكيفية التعامل مع الظروف المختلفة.</p>
+                <div class="space-y-2">
+                    <div class="accordion-item">
+                        <button class="accordion-header w-full text-right">
+                            <span>مدة الاتفاقية وتجديدها (8.1)</span>
+                            <span class="accordion-icon transform transition-transform duration-300 ">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p>تسري الاتفاقية لمدة <span class="highlight-stat">ثلاث (03) سنوات</span> قابلة للتجديد. تُجدد تلقائيًا ما لم يُبدِ أحد الطرفين رغبته في إنهائها أو تعديلها بإشعار كتابي قبل <span class="highlight-stat">ستة (06) أشهر</span> على الأقل من تاريخ انتهاء صلاحيتها.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header w-full text-right">
+                            <span>السرية (8.2)</span>
+                            <span class="accordion-icon transform transition-transform duration-300 ">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p>يلتزم الطرفان بالمحافظة على سرية جميع المعلومات والوثائق والبيانات المصنفة كسرية أو ذات طبيعة حساسة. يمتد هذا الالتزام بالسرية حتى بعد انتهاء أو إنهاء هذه الاتفاقية، لمدة يتفق عليها الطرفان. لا يشمل المعلومات المتاحة للعموم أو التي يوجب القانون الكشف عنها.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header w-full text-right">
+                            <span>القوة القاهرة (8.3)</span>
+                            <span class="accordion-icon transform transition-transform duration-300 ">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p>لا يعتبر أي طرف مسؤولاً عن تأخير أو إخفاق في التنفيذ ناتج عن قوة قاهرة (كوارث طبيعية، حروب، أوبئة، إجراءات حكومية غير متوقعة). يجب إخطار الطرف الآخر كتابيًا.</p>
+                        </div>
+                    </div>
+                     <div class="accordion-item">
+                        <button class="accordion-header w-full text-right">
+                            <span>إنهاء الاتفاقية (8.4)</span>
+                            <span class="accordion-icon transform transition-transform duration-300 ">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>يمكن إنهاؤها بالاتفاق الودي.</li>
+                                <li>يمكن لأي طرف إنهاؤها في حالة إخلال الطرف الآخر بالتزاماته الجوهرية، بعد إشعار ومنح مهلة <span class="highlight-stat">ستين (60) يومًا</span> للتصحيح.</li>
+                                <li>لا يؤثر الإنهاء على المشاريع والالتزامات الجارية ما لم يتفق على خلاف ذلك.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header w-full text-right">
+                            <span>تسوية النزاعات والقانون المطبق (8.5)</span>
+                            <span class="accordion-icon transform transition-transform duration-300 ">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p>تسوية النزاعات ودياً. في حالة عدم التوصل لحل ودي خلال <span class="highlight-stat">ستين (60) يومًا</span>، يُعرض النزاع على المحاكم الجزائرية المختصة. تخضع الاتفاقية للقانون الجزائري.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header w-full text-right">
+                            <span>التعديلات (8.6)</span>
+                            <span class="accordion-icon transform transition-transform duration-300 ">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p>لا يمكن تعديل الاتفاقية إلا بموجب ملحق كتابي موقع من الطرفين.</p>
+                        </div>
+                    </div>
+                     <div class="accordion-item">
+                        <button class="accordion-header w-full text-right">
+                            <span>التمثيل (8.7) والإخطارات (8.8)</span>
+                            <span class="accordion-icon transform transition-transform duration-300 ">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                             <p><strong>التمثيل:</strong> يقر كل طرف بأن الشخص الموقع مخول قانونًا. <strong>الإخطارات:</strong> توجه جميع المراسلات كتابيًا إلى العناوين المذكورة.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header w-full text-right">
+                            <span>النسخ (البند التاسع)</span>
+                            <span class="accordion-icon transform transition-transform duration-300 ">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p>حررت الاتفاقية من نسختين (02) أصليتين (باللغة العربية)، لكل طرف نسخة أصلية (01).</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </main>
 
-    <footer class="primary-bg text-white py-12">
-        <div class="container mx-auto px-6 text-center">
-            <p class="font-bold text-xl mb-2">Print-PDF.com</p>
-            <ul class="flex justify-center space-x-4 mb-4">
-                <li><a href="#" class="hover:secondary-text">Mentions Légales</a></li>
-                <li><a href="#" class="hover:secondary-text">CGV</a></li>
-                <li><a href="#" class="hover:secondary-text">Politique de Confidentialité</a></li>
-            </ul>
-            <div class="flex justify-center items-center space-x-2 mb-4 text-sm">
-                <span>Paiement Sécurisé</span>
-                <span class="text-2xl">💳</span> 
-                <span>(Visa, Mastercard, PayPal)</span>
-            </div>
-            <p class="text-sm">&copy; <span id="currentYear"></span> Print-PDF.com. Tous droits réservés.</p>
+        <footer class="text-center mt-12 py-4 border-t border-amber-300">
+            <p class="text-sm text-amber-700">&copy; <span id="currentYear"></span> مستكشف اتفاقية الشراكة. تم التطوير لأغراض توضيحية.</p>
+        </footer>
+    </div>
+
+    <button class="chatbot-button" onclick="toggleChatbot()">
+        💬
+    </button>
+
+    <div id="chatbotModal" class="chatbot-modal hidden">
+        <div class="chatbot-header">
+            <span>مساعد الاتفاقية</span>
+            <button class="chatbot-close-button" onclick="toggleChatbot()">✖</button>
         </div>
-    </footer>
+        <div id="chatbotMessages" class="chatbot-messages">
+            <div class="message-bubble message-bot">مرحباً! أنا هنا للإجابة عن أسئلتك حول الاتفاقية.</div>
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" id="chatbotInput" class="chatbot-input" placeholder="اكتب سؤالك هنا..." onkeypress="handleKeyPress(event)">
+            <button id="chatbotSendButton" class="chatbot-send-button" onclick="sendMessage()">إرسال</button>
+        </div>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-            const dropZone = document.getElementById('dropZone');
-            if (dropZone) {
-                dropZone.addEventListener('dragover', (event) => {
-                    event.preventDefault();
-                    dropZone.classList.add('dragover');
-                });
-                dropZone.addEventListener('dragleave', () => {
-                    dropZone.classList.remove('dragover');
-                });
-                dropZone.addEventListener('drop', (event) => {
-                    event.preventDefault();
-                    dropZone.classList.remove('dragover');
-                    if (event.dataTransfer.files.length > 0) {
-                        const fileNameDisplay = document.getElementById('fileName');
-                        if (fileNameDisplay) {
-                            fileNameDisplay.textContent = 'Nom du fichier : ' + event.dataTransfer.files[0].name;
-                        }
-                        showMessageBox('Fichier "' + event.dataTransfer.files[0].name + '" déposé (simulation). Redirection vers le devis...', 'info');
-                        window.location.hash = 'devis';
-                    }
-                });
+        function openTab(event, tabName) {
+            let i, tabcontent, tabbuttons;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
             }
-            
-            const quantityInput = document.getElementById('quantity');
-            const quantityPlus = document.getElementById('quantityPlus');
-            const quantityMinus = document.getElementById('quantityMinus');
-
-            if (quantityInput && quantityPlus && quantityMinus) {
-                quantityPlus.addEventListener('click', () => {
-                    quantityInput.value = parseInt(quantityInput.value) + 1;
-                    updatePrice();
-                });
-                quantityMinus.addEventListener('click', () => {
-                    if (parseInt(quantityInput.value) > 1) {
-                        quantityInput.value = parseInt(quantityInput.value) - 1;
-                        updatePrice();
-                    }
-                });
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
             }
-            
-            const quoteForm = document.getElementById('quoteForm');
-            if (quoteForm) {
-                quoteForm.addEventListener('input', updatePrice);
-                quoteForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    showMessageBox('Commande ajoutée au panier (simulation).', 'success');
-                });
-            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
 
-            const paperTypeSelect = document.getElementById('paperType');
-            const paperDescriptionP = document.getElementById('paperDescription');
-            if (paperTypeSelect && paperDescriptionP) {
-                paperTypeSelect.addEventListener('change', function() {
-                    const selectedOption = this.options[this.selectedIndex];
-                    paperDescriptionP.textContent = selectedOption.dataset.description || '';
-                    updatePrice();
-                });
-            }
-            
-            const bindingOptionsContainer = document.getElementById('bindingOptions');
-            const selectedBindingInput = document.getElementById('selectedBinding');
+        // Accordion logic
+        const accordionItems = document.querySelectorAll('.accordion-item');
+        accordionItems.forEach(item => {
+            const header = item.querySelector('.accordion-header');
+            const content = item.querySelector('.accordion-content');
+            const icon = item.querySelector('.accordion-icon');
 
-            if (bindingOptionsContainer && selectedBindingInput) {
-                const options = bindingOptionsContainer.querySelectorAll('.binding-option');
-                options.forEach(option => {
-                    option.addEventListener('click', function() {
-                        if (this.classList.contains('disabled')) return;
-                        
-                        options.forEach(opt => opt.classList.remove('selected'));
-                        this.classList.add('selected');
-                        selectedBindingInput.value = this.dataset.value;
-                        updatePrice();
-                    });
-                });
-                // Set default selection
-                const defaultBinding = bindingOptionsContainer.querySelector('.binding-option[data-value="aucune"]');
-                if (defaultBinding) defaultBinding.classList.add('selected');
-
-            }
-            
-            updatePrice(); // Initial price calculation
-
-            const accordionItems = document.querySelectorAll('.accordion-item');
-            accordionItems.forEach(item => {
-                const header = item.querySelector('.accordion-header');
-                const icon = item.querySelector('.accordion-icon');
+            if (header && content && icon) {
                 header.addEventListener('click', () => {
-                    const isOpen = item.classList.toggle('open');
-                    icon.textContent = isOpen ? '-' : '+';
-                    icon.classList.toggle('rotate-180', !isOpen); // Optional: better icon rotation
+                    const isOpen = content.style.display === 'block';
+                    content.style.display = isOpen ? 'none' : 'block';
+                    icon.classList.toggle('rotate-180', !isOpen);
                 });
-            });
-
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({ behavior: 'smooth' });
-                         if (window.innerWidth < 768 && document.querySelector('header nav ul.flex')) { // Basic mobile check
-                            // Potentially close mobile menu here if it were open
-                        }
-                    }
-                });
-            });
-
-            // Gemini API Integration
-            const generateSummaryBtn = document.getElementById('generateSummaryBtn');
-            if (generateSummaryBtn) {
-                generateSummaryBtn.addEventListener('click', generateDocumentSummary);
-            }
-
-            async function generateDocumentSummary() {
-                const summaryOutput = document.getElementById('summaryOutput');
-                const summaryText = document.getElementById('summaryText');
-                const summaryLoading = document.getElementById('summaryLoading');
-
-                summaryOutput.classList.remove('hidden');
-                summaryText.textContent = '';
-                summaryLoading.classList.remove('hidden');
-
-                try {
-                    let chatHistory = [];
-                    const prompt = "Rédigez un résumé concis (environ 100 mots) d'un rapport d'entreprise typique, couvrant les points clés tels que les performances financières, les défis du marché, les innovations produit et les perspectives futures. Le ton doit être professionnel et informatif.";
-                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                    const payload = { contents: chatHistory };
-                    const apiKey = ""; 
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    const result = await response.json();
-
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        summaryText.textContent = text;
-                    } else {
-                        summaryText.textContent = "Impossible de générer le résumé. Veuillez réessayer.";
-                    }
-                } catch (error) {
-                    console.error("Erreur lors de la génération du résumé:", error);
-                    summaryText.textContent = "Une erreur est survenue lors de la génération du résumé.";
-                } finally {
-                    summaryLoading.classList.add('hidden');
-                }
-            }
-
-            // Custom Message Box Function
-            function showMessageBox(message, type = 'info') {
-                let messageBox = document.getElementById('customMessageBox');
-                if (!messageBox) {
-                    messageBox = document.createElement('div');
-                    messageBox.id = 'customMessageBox';
-                    messageBox.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-lg text-white z-[1000] transition-opacity duration-300 opacity-0';
-                    document.body.appendChild(messageBox);
-                }
-
-                messageBox.textContent = message;
-                messageBox.classList.remove('bg-green-500', 'bg-red-500', 'bg-blue-500');
-                if (type === 'success') {
-                    messageBox.classList.add('bg-green-500');
-                } else if (type === 'error') {
-                    messageBox.classList.add('bg-red-500');
-                } else {
-                    messageBox.classList.add('bg-blue-500');
-                }
-
-                messageBox.classList.remove('opacity-0');
-                messageBox.classList.add('opacity-100');
-
-                setTimeout(() => {
-                    messageBox.classList.remove('opacity-100');
-                    messageBox.classList.add('opacity-0');
-                }, 3000);
             }
         });
+        
+        // Cooperation Areas Data (from Article 2 of the convention)
+        const cooperationAreasData = [
+            { title: "الصحة الحيوانية والأمن البيولوجي", details: "التشخيص الدقيق، الوقاية الفعالة، ومكافحة الأمراض الحيوانية (بما في ذلك الأمراض الوبائية والمشتركة مع الإنسان)، وتطوير استراتيجيات للحد من مقاومة المضادات الحيوية، وإدارة الأزمات الصحية." },
+            { title: "تحسين الإنتاج الحيواني", details: "التحسين الوراثي للسلالات المحلية والمستوردة، تغذية الحيوان المثلى، تطبيق تقنيات التربية الحديثة والمستدامة، وتحسين مؤشرات الأداء الإنتاجي." },
+            { title: "جودة وسلامة الأغذية", details: "مراقبة جودة اللحوم ومنتجاتها على طول سلسلة القيمة، تحليل المخاطر ونقاط التحكم الحرجة (HACCP)، وتطوير أنظمة تتبع المسارات (Traçabilité) من المزرعة إلى المستهلك." },
+            { title: "المتابعة الصحية للحيوان", details: "تطبيق الممارسات الجيدة في تربية، نقل، عناية صحية وذبح الحيوانات بما يتوافق مع المعايير الدولية والتشريعات الوطنية." },
+            { title: "التكوين والتأهيل", details: "تطوير برامج تكوينية متخصصة ومستمرة لفائدة إطارات وعمال المؤسسة، بما في ذلك التكوين التأهيلي والشهادي." },
+            { title: "البحث والتطوير والابتكار", details: "إنجاز مشاريع بحث مشتركة أو تحت الطلب حول إشكاليات محددة تواجه المؤسسة، وتطوير حلول مبتكرة." },
+            { title: "التكنولوجيا الحيوية", details: "تطبيق التقنيات الحيوية الحديثة في مجال الإنتاج والصحة الحيوانية." },
+            { title: "الاقتصاد الريفي والتسويق", details: "دراسات الجدوى الاقتصادية، تحليل الأسواق، وتطوير سلاسل القيمة لمنتجات اللحوم الحمراء." },
+            { title: "البيئة وتثمين المخلفات", details: "دراسة سبل معالجة وتثمين المخلفات الحيوانية ومياه الصرف الصحي للمذابح والمسالخ." }
+        ];
 
-        function updatePrice() {
-            const pageCountInput = document.getElementById('pageCount');
-            const quantityInput = document.getElementById('quantity');
-            const printColorInput = document.querySelector('input[name="printColor"]:checked');
-            const printSideInput = document.querySelector('input[name="printSide"]:checked');
-            const paperTypeInput = document.getElementById('paperType');
-            const formatInput = document.getElementById('format');
-            const selectedBindingInput = document.getElementById('selectedBinding');
-            const totalPriceDisplay = document.getElementById('totalPrice');
+        // Populate Cooperation Area Cards
+        const cooperationCardsContainer = document.getElementById('cooperationCardsContainer');
+        if (cooperationCardsContainer) {
+            cooperationAreasData.forEach(area => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'card';
+                
+                const titleH4 = document.createElement('h4');
+                titleH4.className = 'font-semibold text-orange-600';
+                titleH4.textContent = area.title;
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'card-content text-sm text-neutral-700';
+                contentDiv.textContent = area.details;
+                
+                cardDiv.appendChild(titleH4);
+                cardDiv.appendChild(contentDiv);
+                
+                cardDiv.addEventListener('click', () => {
+                    const isOpen = contentDiv.style.display === 'block';
+                    contentDiv.style.display = isOpen ? 'none' : 'block';
+                });
+                cooperationCardsContainer.appendChild(cardDiv);
+            });
+        }
 
-            if (!pageCountInput || !quantityInput || !printColorInput || !printSideInput || !paperTypeInput || !formatInput || !selectedBindingInput || !totalPriceDisplay) {
-                console.error("Un ou plusieurs éléments du formulaire de devis sont manquants.");
+
+        // Chart.js: Cooperation Areas Donut Chart
+        const ctxCooperation = document.getElementById('cooperationAreasChart');
+        if (ctxCooperation) {
+            const chartLabels = cooperationAreasData.map(area => area.title.length > 20 ? area.title.substring(0, 18) + "..." : area.title ); // Shorten labels for chart
+            const chartData = cooperationAreasData.map(() => 1); // Equal segments for visualization
+
+            new Chart(ctxCooperation, {
+                type: 'doughnut',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'محاور التعاون',
+                        data: chartData,
+                        backgroundColor: [
+                            '#FDBA74', // amber-300
+                            '#FB923C', // orange-400
+                            '#F97316', // orange-500
+                            '#EA580C', // orange-600
+                            '#C2410C', // orange-700
+                            '#9A3412', // orange-800
+                            '#FCD34D', // amber-400
+                            '#FBBF24', // amber-500
+                            '#F59E0B'  // amber-600
+                        ],
+                        borderColor: '#FFFAF0', // bg-amber-50
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    family: "'Tajawal', 'Inter', sans-serif",
+                                    size: 10
+                                },
+                                boxWidth: 15,
+                                padding: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    // Use full title for tooltip
+                                    return cooperationAreasData[context.dataIndex].title;
+                                }
+                            },
+                            bodyFont: {
+                                family: "'Tajawal', 'Inter', sans-serif"
+                            },
+                            titleFont: {
+                                family: "'Tajawal', 'Inter', sans-serif"
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Default to first tab
+        if (document.getElementsByClassName("tab-button").length > 0) {
+           // document.getElementsByClassName("tab-button")[0].click(); // Not needed if first tab is active by default
+        }
+
+        // Chatbot Logic
+        const chatbotModal = document.getElementById('chatbotModal');
+        const chatbotMessages = document.getElementById('chatbotMessages');
+        const chatbotInput = document.getElementById('chatbotInput');
+        const chatbotSendButton = document.getElementById('chatbotSendButton');
+
+        function toggleChatbot() {
+            chatbotModal.classList.toggle('hidden');
+            if (!chatbotModal.classList.contains('hidden')) {
+                chatbotInput.focus();
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom on open
+            }
+        }
+
+        function addMessage(text, sender, targetElement = chatbotMessages) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message-bubble');
+            if (sender === 'user') {
+                messageDiv.classList.add('message-user');
+            } else {
+                messageDiv.classList.add('message-bot');
+            }
+            messageDiv.textContent = text;
+            targetElement.appendChild(messageDiv);
+            targetElement.scrollTop = targetElement.scrollHeight; // Scroll to bottom
+        }
+
+        function showLoadingIndicator(targetElement) {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.classList.add('loading-indicator');
+            loadingDiv.id = 'loadingIndicator';
+            loadingDiv.textContent = '...جاري الكتابة';
+            targetElement.appendChild(loadingDiv);
+            targetElement.scrollTop = targetElement.scrollHeight;
+        }
+
+        function removeLoadingIndicator() {
+            const loadingDiv = document.getElementById('loadingIndicator');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        const fullConventionText = `
+            الجمهورية الجزائرية الديمقراطية الشعبية
+
+            وزارة التعليم العالي والبحث العلمي
+            جامعة الشاذلي بن جديد - الطارف
+
+            المؤسسة الجزائرية للحوم الحمراء (ALVIAR)
+            (أو اسم المؤسسة المعنية)
+
+            اتفاقية إطار للتعاون العلمي والتقني والشراكة الاستراتيجية
+
+            ما بين:
+
+            جامعة الشاذلي بن جديد - الطارف، الكائن مقرها بـ: ص.ب 73، ولاية الطارف، الرمز البريدي 36000، الممثلة قانونًا من طرف مديرها، الأستاذ الدكتور بن شهرة شول.
+            المشار إليها فيما بعد بـ "الجامعة"
+            من جهة،
+
+            و
+
+            المؤسسة الجزائرية للحوم الحمراء (ALVIAR) (أو اسم المؤسسة المعنية)، شركة ذات أسهم (أو الشكل القانوني للمؤسسة)، رأسمالها ............ دينار جزائري، مقيدة بالسجل التجاري لولاية ............ تحت رقم ............، الكائن مقرها الاجتماعي بـ: ..........................، الممثلة قانونًا من طرف مديرها العام، السيد/السيدة .......................... .
+            المشار إليها فيما بعد بـ "المؤسسة"
+            من جهة أخرى،
+
+            يشار إليهما معًا بـ "الطرفين" أو كل على حدة بـ "الطرف".
+
+            ---
+
+            ديباجة:
+
+            إدراكًا منهما للأهمية الاستراتيجية لتنمية قطاع اللحوم الحمراء في الجزائر، ودوره المحوري في تحقيق الأمن الغذائي الوطني، وتعزيز الاقتصاد المحلي، وضمان جودة المنتجات وسلامتها؛
+
+            واستنادًا إلى التوجيهات الوطنية الرامية إلى تعزيز الشراكة الفعالة بين الجامعة والمؤسسات الاقتصادية، وتثمين مخرجات البحث العلمي والتطوير التكنولوجي لخدمة التنمية المستدامة والشاملة؛
+
+            وعملاً بأحكام النصوص القانونية والتنظيمية السارية المفعول في الجمهورية الجزائرية الديمقراطية الشعبية، لا سيما:
+            * القانون رقم 99-05 المؤرخ في 18 ذي الحجة عام 1419 الموافق 4 أبريل سنة 1999، المتضمن القانون التوجيهي للتعليم العالي، المعدل والمتمم.
+            * القانون رقم 15-21 المؤرخ في 18 ربيع الأول عام 1437 الموافق 30 ديسمبر سنة 2015، المتضمن القانون التوجيهي حول البحث العلمي والتطوير التكنولوجي.
+            * المرسوم التنفيذي رقم 01-293 المؤرخ في 15 رجب عام 1422 الموافق 1 أكتوبر سنة 2001، الذي يحدد مهام الجامعة والقواعد الخاصة بتنظيمها وسيرها، المعدل والمتمم، والذي يسمح للأساتذة الباحثين بالقيام بنشاطات الخبرة والاستشارة.
+            * القانون رقم 88-08 المؤرخ في 12 جمادى الثانية عام 1408 الموافق 26 يناير سنة 1988، المتعلق بنشاطات الطب البيطري وحماية صحة الحيوان، المعدل والمتمم.
+            * القوانين والأنظمة المتعلقة بالصحة الحيوانية، رفاهية الحيوان، وسلامة الأغذية في الجزائر.
+            * (وكل نص قانوني أو تنظيمي ذي صلة بالشراكة بين الجامعة والمؤسسة).
+
+            ورغبة منهما في إرساء إطار تعاون منظم، استراتيجي ومثمر، يهدف إلى تمكين المؤسسة من الاستفادة القصوى من الخبرات العلمية، التقنية، والبيداغوجية للأساتذة الباحثين والباحثين بكلية الطب البيطري بالجامعة، وغيرها من الأقسام ذات الصلة (مثل علوم الأغذية، التكنولوجيا الحيوية، علوم البيئة)، بهدف التحسين المستمر لصحة الحيوان، ورفاهية القطيع، وتعزيز إنتاجية المربين، وضمان جودة وسلامة المنتجات اللحمية، والمساهمة الفعالة في الأمن الغذائي الوطني وتطوير البحث التطبيقي الموجه؛
+
+            ونظراً لحاجة المؤسسة إلى مواجهة التحديات المتزايدة المتعلقة بالوقاية من الأمراض الحيوانية وعلاجها (بما في ذلك الأمراض المشتركة بين الإنسان والحيوان)، وتحسين الإنتاجية من خلال التحسين الوراثي والتغذية، وضبط جودة المنتجات وتتبع مسارها، واحترام رفاهية الحيوان وتطبيق أفضل الممارسات، وتعزيز كفاءات موظفيها وتطوير قدراتهم؛
+
+            فقد اتفق الطرفان على ما يلي:
+
+            ---
+
+            البند الأول : موضوع الاتفاقية والأهداف العامة
+
+            تهدف هذه الاتفاقية إلى تحديد إطار عام للتعاون والشراكة الاستراتيجية بين الطرفين في المجالات ذات الاهتمام المشترك، وخاصة فيما يتعلق بالاستشارات العلمية والتقنية، والبحث والتطوير، والتكوين ونقل الكفاءات، بهدف دعم المؤسسة في تحقيق أهدافها المتعلقة بتحسين الصحة الحيوانية، وسلامة وجودة منتجاتها، وتطوير قدراتها الإنتاجية والتنافسية، والمساهمة في التنمية الاقتصادية والاجتماعية للبلاد، مع التركيز على الموضوعات التالية:
+            1) تطوير معايير الصحة الحيوانية والسلامة الغذائية.
+            2) تحسين الكفاءة التشغيلية والحد من الهدر.
+            3) تدريب الكوادر وتأهيلهم وفق أحدث المعايير.
+            4) تبادل البيانات والخبرات لتعزيز البحث التطبيقي.
+            5) تقديم خدمات استشارية وصحية .
+
+            ---
+
+            البند الثاني : مجالات التعاون
+
+            تشمل مجالات التعاون، دون أن تكون حصرية، ما يلي:
+            1) الصحة الحيوانية والأمن البيولوجي: التشخيص الدقيق، الوقاية الفعالة، ومكافحة الأمراض الحيوانية (بما في ذلك الأمراض الوبائية والمشتركة مع الإنسان)، وتطوير استراتيجيات للحد من مقاومة المضادات الحيوية، وإدارة الأزمات الصحية.
+            2) تحسين الإنتاج الحيواني: التحسين الوراثي للسلالات المحلية والمستوردة، تغذية الحيوان المثلى، تطبيق تقنيات التربية الحديثة والمستدامة، وتحسين مؤشرات الأداء الإنتاجي.
+            3) جودة وسلامة الأغذية: مراقبة جودة اللحوم ومنتجاتها على طول سلسلة القيمة، تحليل المخاطر ونقاط التحكم الحرجة (HACCP)، وتطوير أنظمة تتبع المسار (Traçabilité) من المزرعة إلى المستهلك.
+            4) المتابعة الصحية للحيوان: تطبيق الممارسات الجيدة في تربية، نقل، وذبح الحيوانات بما يتوافق مع المعايير الدولية والتشريعات الوطنية.
+            5) التكوين والتأهيل: تطوير برامج تكوينية متخصصة ومستمرة لفائدة إطارات وعمال المؤسسة، بما في ذلك التكوين التأهيلي والشهادي.
+            6) البحث والتطوير والابتكار: إنجاز مشاريع بحث مشتركة أو تحت الطلب حول إشكاليات محددة تواجه المؤسسة، وتطوير حلول مبتكرة.
+            7) التكنولوجيا الحيوية: تطبيق التقنيات الحيوية الحديثة في مجال الإنتاج والصحة الحيوانية.
+            8) الاقتصاد الريفي والتسويق: دراسات الجدوى الاقتصادية، تحليل الأسواق، وتطوير سلاسل القيمة لمنتجات اللحوم الحمراء.
+            9) البيئة وتثمين المخلفات: دراسة سبل معالجة وتثمين المخلفات الحيوانية ومياه الصرف الصحي للمذابح والمسالخ.
+
+            ---
+
+            البند الثالث : آليات تدخل الخبرة العلمية والبيطرية
+
+            1) توفير خبراء متعدد التخصصات ومؤهلين: تلتزم الجامعة، حسب الإمكانيات المتاحة وفي إطار القوانين والتنظيمات المعمول بها، بتوفير أساتذة باحثين، وباحثين، وطلبة دكتوراه مؤهلين تأهيلاً عالياً في الطب البيطري (بما في ذلك التخصصات الدقيقة مثل: علم الأوبئة، الطفيليات، الجراحة البيطرية، التناسل الحيواني، صحة القطيع)، والمجالات الأخرى ذات الصلة (علوم الأغذية، التكنولوجيا الحيوية، علوم البيئة، الاقتصاد الزراعي). يتم توفير هؤلاء الخبراء لتقديم خدمات الخبرة، التشخيص، العلاج، الاستشارة، المتابعة، والتقييم لفائدة المؤسسة.
+            2) إجراءات طلب التدخل والاستجابة:
+                ○ تقدم المؤسسة طلباً رسمياً مكتوباً (عبر بريد إلكتروني رسمي أو نظام تتبع الطلبات إذا تم إحداثه) إلى نيابة مديرية الجامعة للعلاقات الخارجية، مع نسخة إلى عميد كلية الطب البيطري (أو مدير المعهد/القسم المعني). يجب أن يوضح الطلب طبيعة الإشكالية بدقة، الأهداف المرجوة من التدخل، نوع وعدد الحيوانات المعنية، وأي معلومات تقنية أخرى ذات صلة.
+                ○ تقوم الجامعة، عبر لجنة التوجيه والمتابعة المشتركة (المشار إليها في المادة 7)، بتقييم الطلب، وتحديد الخبراء المناسبين، واقتراح خطة عمل مفصلة (المنهجية، الجدول الزمني التقديري، النتائج المتوقعة) في أجل أقصاه خمسة (05) أيام عمل بعد استلام الطلب الرسمي.
+            3) آجال التدخل وتسيير الحالات المستعجلة:
+                ○ تلتزم الجامعة بالتدخل في أقرب الآجال في الحالات الطارئة والمثبتة التي تستدعي استجابة فورية (مثل تفشي وباء، حالات تسمم جماعية، أو أي خطر يهدد حياة القطيع أو سلامة المنتجات).
+                ○ بالنسبة للتدخلات المبرمجة أو الاستشارية غير الطارئة، يتم تحديد الآجال بالاتفاق بين الطرفين بناءً على خطة عمل مقترحة.
+                ○ يمكن دراسة إمكانية وضع نظام مناوبة (Astreinte) للخبراء البيطريين من الجامعة لضمان الاستجابة السريعة للحالات الطارئة خارج أوقات العمل الرسمية، وتحدد تفاصيله في ملحق خاص.
+            4) تقارير التدخل والمتابعة:
+                ○ يقدم فريق خبراء الجامعة تقريراً مفصلاً وموثقاً بعد كل تدخل، يتضمن التشخيص الدقيق، نتائج التحاليل المخبرية (إن وجدت)، العلاجات المقدمة، التوصيات والإجراءات المقترحة (وقائية وعلاجية)، والتدابير التصحيحية.
+                ○ يُسلم هذا التقرير إلى المؤسسة في أجل أقصاه خمسة عشر (15) يوم عمل بعد انتهاء التدخل.
+                ○ يمكن الاتفاق على آليات لمتابعة تنفيذ التوصيات وتقييم فعاليتها، بما في ذلك زيارات متابعة دورية أو اجتماعات تقييم.
+
+            ---
+
+            البند الرابع : برامج البحث والتطوير المشتركة
+
+            1) المحاور الاستراتيجية للبحث والتطوير: يتفق الطرفان على تحديد محاور بحث وتطوير ذات أولوية، يتم تحديثها دورياً من قبل لجنة التوجيه والمتابعة المشتركة، وتكون موجهة لحل الإشكاليات المحددة التي تواجه المؤسسة وتدعم أهدافها الاستراتيجية. يمكن أن تشمل هذه المحاور، على سبيل المثال لا الحصر:
+                ○ التوصيف الوراثي للسلالات الحيوانية المحلية وتحسينها لزيادة الإنتاجية والمقاومة للأمراض.
+                ○ تثمين الموارد العلفية المحلية وغير التقليدية في تغذية الحيوان وتقليل تكاليف الإنتاج.
+                ○ تطوير طرق تشخيص سريعة ومبتكرة للأمراض الحيوانية (بما في ذلك الأمراض الفيروسية والبكتيرية والطفيليات) ولقاحات فعالة.
+                ○ دراسات حول جودة اللحوم الحمراء (الخصائص الحسية، الكيميائية، الميكروبيولوجية) ومعاييرها لضمان مطابقتها للمواصفات الوطنية والدولية.
+                ○ تطوير أنظمة تتبع مسار المنتجات من المزرعة إلى المستهلك لتعزيز الشفافية والأمان الغذائي.
+                ○ تحسين ظروف رفاهية الحيوان في مختلف مراحل الإنتاج، النقل، والذبح.
+                ○ تطوير حلول مستدامة لتثمين المخلفات الحيوانية ومعالجة مياه الصرف الصحي للمذابح والمسالخ بما يقلل الأثر البيئي.
+                ○ دراسات حول اقتصاديات الإنتاج الحيواني والتسويق لتعزيز تنافسية المؤسسة.
+            2) إجراءات مشاريع البحث المشتركة: يتم تجسيد كل مشروع بحث وتطوير مشترك من خلال ملاحق خاصة بهذه الاتفاقية. يحدد كل ملحق بدقة:
+                ○ الأهداف الذكية (SMART) للمشروع.
+                ○ المنهجية العلمية والتقنية المتبعة.
+                ○ الجدول الزمني التفصيلي للمشروع.
+                ○ النتائج المتوقعة والمخرجات (Deliverables).
+                ○ مهام ومسؤوليات كل طرف.
+                ○ الميزانية التقديرية المفصلة للمشروع ومصادر التمويل.
+                ○ آليات المتابعة والتقييم المرحلي للمشروع.
+            3) الملكية الفكرية (PI) وتثمين النتائج:
+                ○ تخضع حقوق الملكية الفكرية الناتجة عن المشاريع المشتركة (براءات اختراع، برمجيات, نماذج صناعية، منشورات علمية،......إلخ) للقوانين والتنظيمات الجزائرية السارية المفعول، لا سيما الأمر رقم 03-05 والأمر رقم 03-07 المشار إليهما أعلاه.
+                ○ يتم تحديد ملكية النتائج البحثية وتوزيع حقوق الملكية الفكرية بشكل عادل ومنصف في كل ملحق خاص بمشروع البحث، مع الأخذ في الاعتبار مساهمة كل طرف (مالية، بشرية، مادية، فكرية).
+                ○ يتفق الطرفان على آليات حماية وتثمين النتائج المشتركة، بما في ذلك إمكانية الاستغلال الصناعي والتجاري، مع تقاسم العائدات وفقاً لما يتم الاتفاق عليه في ملحق المشروع.
+                ○ تحتفظ الجامعة بحق نشر النتائج العلمية للأغراض الأكاديمية والبحثية، مع مراعاة حماية الأسرار الصناعية والتجارية للمؤسسة و/أو أي اتفاقيات ولاحق مبرمة. يتم الاتفاق على آجال النشر لضمان حماية الملكية الفكرية أولاً.
+
+            ---
+
+            البند الخامس : التكوين، نقل الكفاءات، والإدماج المهني
+
+            1) برامج تكوينية تأهيلية: تلتزم الجامعة، بالتشاور الوثيق مع المؤسسة، بتصميم وتطوير برامج تكوين مستمر مصممة خصيصاً (دورات قصيرة المدى، ورشات عمل متخصصة). تستهدف هذه البرامج الإطارات التقنية والإدارية، الأطباء البيطريين، والمربين وعمال المؤسسة، في المجالات التي تغطيها هذه الاتفاقية، لضمان تحديث معارفهم وتطوير مهاراتهم.
+            2) التربصات والأطروحات داخل المؤسسة: تشجع الجامعة وتسهل استقبال المؤسسة لطلبة الجامعة (ليسانس، ماستر، دكتوراه بيطرة، دكتوراه الطور الثالث) لإجراء تربصات ميدانية تطبيقية أو لإعداد مذكرات وأطروحات تخرج تتناول إشكاليات واقعية ومحددة تواجه المؤسسة. تلتزم المؤسسة بتوفير التأطير المهني اللازم، وظروف العمل المناسبة، والوصول إلى البيانات والمعلومات الضرورية (مع مراعاة الملكية الفكرية).
+            3) التظاهرات العلمية والتوعوية المشتركة: يشجع الطرفان على التنظيم المشترك لأيام دراسية، ملتقيات علمية، ورشات عمل تطبيقية، ومعارض متخصصة، أيام توعوية وتحسيسية بهدف تبادل الخبرات، نشر المعارف الجديدة، وعرض النتائج البحثية المشتركة على نطاق أوسع.
+
+            ---
+
+            البند السادس : الجوانب المالية، المادية، واللوجستية
+
+            1) الترتيبات المالية المفصلة:
+                ○ يتم تحديد الأعباء المالية المترتبة عن مختلف الخدمات المقدمة من الجامعة (خبرة، استشارة، تكوين، مشاركة في البحث والتطوير) بموجب ملحق مالي تفصيلي يرفق بهذه الاتفاقية أو بموجب اتفاقيات تطبيقية خاصة لكل مشروع أو خدمة.
+                ○ يحدد الملحق المالي جداول تسعير الخدمات، وكيفيات إعداد الفواتير وتسديد المستحقات، وفقاً للتنظيمات المحاسبية والمالية المعمول بها في القانون الجزائري.
+                ○ يمكن أن تكون مساهمة المؤسسة مالية (دفع مقابل الخدمات)، أو عينية (توفير تجهيزات، مواد استهلاكية، مواد خام)، أو بشرية (توفير عمالة مؤقتة أو تأطير).
+            2) توفير الموارد المادية واللوجستية:
+                ○ تلتزم المؤسسة بتغطية مصاريف تنقل وإقامة خبراء الجامعة عند قيامهم بمهام تدخل ضمن إطار هذه الاتفاقية، وبتوفير التسهيلات اللوجستية اللازمة (مكاتب عمل، وصول آمن إلى المنشآت والحيوانات، بيانات، معدات حماية شخصية).
+                ○ تلتزم الجامعة بتوظيف مختبراتها وتجهيزاتها المتخصصة، ومنصاتها التكنولوجية، في خدمة المؤسسة وفقاً للضوابط الداخلية المعمول بها وبعد اتفاق مسبق يحدد شروط الاستخدام.
+            3) البحث المشترك عن مصادر التمويل: يلتزم الطرفان بالبحث المشترك عن فرص تمويل للمشاريع المنبثقة عن هذه الاتفاقية لدى الهيئات الوطنية (مثل المديرية العامة للبحث العلمي والتطوير التكنولوجي DGRSDT، الصندوق الوطني للبحث العلمي، وزارة الفلاحة والتنمية الريفية، الوكالة الوطنية لترقية وتطوير البحث العلمي) والدولية (برامج التعاون الثنائي أو المتعدد الأطراف، صناديق التنمية، البرامج الدولية، إلخ).
+
+            ---
+
+            البند السابع : حوكمة ومتابعة الشراكة
+
+            1) لجنة توجيه ومتابعة مشتركة:
+                ○ تُشكل لجنة توجيه ومتابعة مشتركة تتكون من 06 أشخاص من ممثلي الطرفين، ثلاثة ممثلين عن كل طرف، يعينهم مسؤولو الهيئتين. يفضل أن يكون الممثلون من ذوي المناصب القيادية والخبرة الفنية لضمان اتخاذ القرارات الاستراتيجية والتشغيلية الفعالة.
+                ○ مهام اللجنة، تتمثل في:
+                ■ السهر على حسن تنفيذ بنود الاتفاقية وملاحقها.
+                ■ تحديد الأولويات الاستراتيجية والمصادقة على خطط العمل السنوية والمشاريع المشتركة.
+                ■ التقييم الدوري للأنشطة المنجزة والنتائج المحققة، وقياس مؤشرات الأداء.
+                ■ اقتراح أي تعديلات أو تحسينات على الاتفاقية أو ملاحقها.
+                ■ الفصل في أي صعوبات أو نزاعات قد تعترض تنفيذ الاتفاقية بالطرق الودية.
+                ■ العمل كقوة اقتراح لتطوير مجالات تعاون جديدة.
+            2) وتيرة الاجتماعات والتقارير: تجتمع لجنة التوجيه والمتابعة بصفة دورية، مرتين (02) في السنة على الأقل، وكلما دعت الضرورة لذلك، بناءً على دعوة كتابية من أحد الطرفين. يتم إعداد محاضر رسمية لاجتماعات اللجنة. يقدم الطرفان تقارير نشاط دورية (نصف سنوية مثلاً) إلى اللجنة لتقييم التقدم المحرز.
+            3) منسق الاتفاقية: يعين كل طرف منسقًا مسؤولاً عن تسهيل التواصل والتنسيق العملياتي لتنفيذ الأنشطة المتفق عليها. يكون المنسق هو نقطة الاتصال الرئيسية بين الطرفين.
+
+            ---
+
+            البند الثامن : أحكام عامة
+
+            1) مدة الاتفاقية وتجديدها:
+                ○ تدخل هذه الاتفاقية حيز التنفيذ ابتداءً من تاريخ توقيعها من قبل الطرفين، وتسري لمدة ثلاث (03) سنوات قابلة للتجديد.
+                ○ تُجدد الاتفاقية تلقائيًا، ما لم يُبدِ أحد الطرفين رغبته في إنهائها أو تعديلها بموجب إشعار كتابي يرسل إلى الطرف الآخر قبل ستة (06) أشهر على الأقل من تاريخ انتهاء صلاحيتها.
+            2) السرية:
+                ○ يلتزم الطرفان بالمحافظة على سرية جميع المعلومات والوثائق والبيانات التي يتم تبادلها أو الاطلاع عليها في إطار تنفيذ هذه الاتفاقية، والتي يتم تصنيفها صراحة على أنها سرية أو ذات طبيعة حساسة.
+                ○ يمتد هذا الالتزام بالسرية حتى بعد انتهاء أو إنهاء هذه الاتفاقية، لمدة يتفق عليها الطرفان. لا يشمل هذا الالتزام المعلومات التي أصبحت متاحة للعموم بشكل قانوني أو التي يوجب القانون الكشف عنها.
+            3) القوة القاهرة:
+                ○ لا يعتبر أي من الطرفين مسؤولاً عن أي تأخير أو إخفاق في تنفيذ التزاماته بموجب هذه الاتفاقية إذا كان هذا التأخير أو الإخفاق ناتجًا عن قوة قاهرة، على النحو المتعارف عليه قانونًا وقضاءً في القانون الجزائري (مثل الكوارث الطبيعية، الحروب، الأوبئة، الإجراءات الحكومية غير المتوقعة).
+                ○ يجب على الطرف المتأثر بالقوة القاهرة إخطار الطرف الآخر كتابيًا في أقرب وقت ممكن، مع تقديم الأدلة اللازمة، وتحديد المدة المتوقعة للتأثير.
+            4) إنهاء الاتفاقية:
+                ○ يمكن إنهاء هذه الاتفاقية قبل تاريخ انتهاء مدتها بالاتفاق الودي بين الطرفين.
+                ○ يمكن لأي من الطرفين إنهاء الاتفاقية في حالة إخلال الطرف الآخر بالتزاماته الجوهرية، بعد إرسال إشعار كتابي بالإنهاء ومنح مهلة ستين (60) يومًا للطرف المخل لتصحيح الوضع. إذا استمر الإخلال، يمكن للطرف المتضرر إنهاء الاتفاقية فورًا.
+                ○ لا يؤثر إنهاء الاتفاقية على المشاريع والالتزامات الجارية وقت الإنهاء، ما لم يتفق الطرفان على خلاف ذلك، ويتم تسوية الأمور العالقة بشكل عادل.
+            5) تسوية النزاعات والقانون المطبق:
+                ○ يسعى الطرفان إلى تسوية أي نزاع قد ينشأ عن تفسير أو تنفيذ هذه الاتفاقية بالطرق الودية والمفاوضات المباشرة، مع إشراك لجنة التوجيه والمتابعة.
+                ○ في حالة عدم التوصل إلى حل ودي في غضون ستين (60) يومًا من تاريخ نشوء النزاع، يُعرض النزاع على المحاكم الجزائرية المختصة إقليميًا، وتكون المحكمة المختصة هي محكمة [اسم المدينة التي تقع فيها الجامعة أو المؤسسة].
+                ○ تخضع هذه الاتفاقية في تفسيرها وتنفيذها للقانون الجزائري وحده.
+            6) التعديلات: لا يمكن تعديل أو تغيير أحكام هذه الاتفاقية إلا بموجب ملحق كتابي موقع من قبل الممثلين القانونيين للطرفين، ويصبح جزءًا لا يتجزأ من هذه الاتفاقية.
+            7) التمثيل: يقر كل طرف بأن الشخص الموقع على هذه الاتفاقية نيابة عنه مخول قانونًا للقيام بذلك، وأن هذه الاتفاقية تلزم الكيان الذي يمثله.
+            8) الإخطارات: توجه جميع الإخطارات والمراسلات الرسمية المتعلقة بهذه الاتفاقية كتابيًا إلى العناوين المذكورة في مقدمة هذه الاتفاقية، أو إلى أي عنوان آخر يتم إخطار الطرف الآخر به كتابيًا مسبقًا.
+            البند التاسع: 
+            حررت هذه الاتفاقية من نسختين (02) أصليتين (باللغة العربية)، لكل طرف نسخة أصلية (01).
+        `;
+
+        async function callGeminiAPI(prompt, outputElement, loadingElement) {
+            outputElement.innerHTML = ''; // Clear previous output
+            outputElement.classList.remove('active'); // Hide output area
+            showLoadingIndicator(loadingElement);
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                removeLoadingIndicator();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const botResponse = result.candidates[0].content.parts[0].text;
+                    outputElement.innerHTML = botResponse.replace(/\n/g, '<br>'); // Display newlines as <br>
+                    outputElement.classList.add('active'); // Show output area
+                } else {
+                    outputElement.innerHTML = 'عذراً، لم أتمكن من الحصول على إجابة. يرجى المحاولة مرة أخرى.';
+                    outputElement.classList.add('active');
+                }
+            } catch (error) {
+                removeLoadingIndicator();
+                console.error('Error calling Gemini API:', error);
+                outputElement.innerHTML = 'حدث خطأ أثناء التواصل مع المساعد. يرجى التحقق من اتصالك بالإنترنت والمحاولة لاحقاً.';
+                outputElement.classList.add('active');
+            }
+        }
+
+        // Chatbot specific sendMessage function (uses addMessage to chatbotMessages)
+        async function sendMessage() {
+            const userMessage = chatbotInput.value.trim();
+            if (userMessage === '') return;
+
+            addMessage(userMessage, 'user');
+            chatbotInput.value = '';
+            showLoadingIndicator(chatbotMessages);
+
+            const prompt = `أجب عن السؤال التالي باللغة العربية، بالاعتماد فقط على نص الاتفاقية المقدم. إذا كان السؤال لا يتعلق مباشرة بالاتفاقية، يرجى الإشارة إلى أنك لا تستطيع الإجابة. السؤال: ${userMessage} نص الاتفاقية: ${fullConventionText}`;
+            
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                removeLoadingIndicator();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const botResponse = result.candidates[0].content.parts[0].text;
+                    addMessage(botResponse, 'bot');
+                } else {
+                    addMessage('عذراً، لم أتمكن من الحصول على إجابة. يرجى المحاولة مرة أخرى.', 'bot');
+                }
+            } catch (error) {
+                removeLoadingIndicator();
+                console.error('Error calling Gemini API:', error);
+                addMessage('حدث خطأ أثناء التواصل مع المساعد. يرجى التحقق من اتصالك بالإنترنت والمحاولة لاحقاً.', 'bot');
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // New LLM Features
+        async function generateKeyTakeaways() {
+            const outputElement = document.getElementById('keyTakeawaysContent');
+            const outputArea = document.getElementById('keyTakeawaysOutput');
+            const prompt = `استخرج أهم النقاط والمفاهيم الرئيسية من اتفاقية الشراكة هذه وقدمها في شكل قائمة نقطية باللغة العربية. نص الاتفاقية: ${fullConventionText}`;
+            await callGeminiAPI(prompt, outputElement, outputArea);
+        }
+
+        async function explainTerm() {
+            const term = document.getElementById('termExplainerInput').value.trim();
+            const outputElement = document.getElementById('termExplainerContent');
+            const outputArea = document.getElementById('termExplainerOutput');
+            if (term === '') {
+                outputElement.innerHTML = 'الرجاء إدخال مصطلح لشرحه.';
+                outputArea.classList.add('active');
+                return;
+            }
+            const prompt = `اشرح لي مصطلح '${term}' كما هو مذكور في اتفاقية الشراكة هذه، معتمداً فقط على نص الاتفاقية. إذا لم يكن المصطلح موجودًا أو لا يمكن شرحه من نص الاتفاقية، يرجى الإشارة إلى ذلك. الشرح يجب أن يكون باللغة العربية. نص الاتفاقية: ${fullConventionText}`;
+            await callGeminiAPI(prompt, outputElement, outputArea);
+        }
+
+        async function summarizeSection(sectionId) {
+            const sectionElement = document.getElementById(sectionId);
+            const summaryOutputElement = document.getElementById(`${sectionId}SummaryContent`);
+            const summaryOutputArea = document.getElementById(`${sectionId}Summary`);
+
+            let sectionText = '';
+            // Extract text from the section, excluding LLM output areas
+            Array.from(sectionElement.children).forEach(child => {
+                if (!child.classList.contains('llm-output-area') && !child.classList.contains('llm-button')) {
+                    sectionText += child.textContent + ' ';
+                }
+            });
+            sectionText = sectionText.trim();
+
+            if (sectionText === '') {
+                summaryOutputElement.innerHTML = 'لا يوجد محتوى كافٍ لتلخيصه في هذا القسم.';
+                summaryOutputArea.classList.add('active');
                 return;
             }
 
-            let pageCount = parseInt(pageCountInput.value) || 0;
-            let quantity = parseInt(quantityInput.value) || 1;
-            let printColor = printColorInput.value;
-            let printSide = printSideInput.value;
-            let paperType = paperTypeInput.value;
-            let format = formatInput.value;
-            let binding = selectedBindingInput.value;
-
-            let basePricePerPage = 0.10; // Base N&B
-            if (printColor === 'color') {
-                basePricePerPage = 0.30; // Base Couleur
-            }
-
-            if (printSide === 'recto-verso') {
-                basePricePerPage *= 1.8; // Majoration pour recto-verso (un peu moins que x2)
-            }
-
-            let paperMultiplier = 1;
-            if (paperType === 'premium_100g') paperMultiplier = 1.2;
-            if (paperType === 'extra_premium_120g') paperMultiplier = 1.5;
-
-            let formatMultiplier = 1;
-            if (format === 'A5') formatMultiplier = 0.7;
-            if (format === 'A3') formatMultiplier = 2;
-
-
-            let bindingCost = 0;
-            const bindingOptions = document.querySelectorAll('#bindingOptions .binding-option');
-            bindingOptions.forEach(opt => opt.classList.remove('disabled')); // Reset disabled states
-
-            if (binding === 'spirale') {
-                if (pageCount < 5) {
-                    document.querySelector('.binding-option[data-value="spirale"]').classList.add('disabled');
-                    if (selectedBindingInput.value === 'spirale') selectedBindingInput.value = 'aucune'; // Fallback
-                } else {
-                    bindingCost = 1.50;
-                }
-            } else if (binding === 'agrafes') {
-                 if (pageCount < 2 || pageCount > 60) {
-                    document.querySelector('.binding-option[data-value="agrafes"]').classList.add('disabled');
-                     if (selectedBindingInput.value === 'agrafes') selectedBindingInput.value = 'aucune';
-                } else {
-                    bindingCost = 0.50 + (pageCount > 20 ? 0.30 : 0); // coût additionnel si > 20 pages
-                }
-            } else if (binding === 'dos_carre_colle') {
-                if (pageCount < 40) {
-                    document.querySelector('.binding-option[data-value="dos_carre_colle"]').classList.add('disabled');
-                    if (selectedBindingInput.value === 'dos_carre_colle') selectedBindingInput.value = 'aucune';
-                } else {
-                     bindingCost = 3.00 + (pageCount * 0.02); // Coût de base + par page
-                }
-            }
-            
-            // Re-check selected binding if it became disabled
-            const currentSelectedBindingElement = document.querySelector(`.binding-option[data-value="${selectedBindingInput.value}"]`);
-            if (currentSelectedBindingElement && currentSelectedBindingElement.classList.contains('disabled')) {
-                selectedBindingInput.value = 'aucune'; // Fallback to 'aucune'
-                binding = 'aucune'; // update local var
-                bindingCost = 0; // reset binding cost
-                document.querySelectorAll('#bindingOptions .binding-option').forEach(opt => opt.classList.remove('selected'));
-                const noBindingOpt = document.querySelector('.binding-option[data-value="aucune"]');
-                if (noBindingOpt) noBindingOpt.classList.add('selected');
-            }
-
-
-            let totalPagesPrinted = pageCount;
-            let priceForOneCopy = (totalPagesPrinted * basePricePerPage * paperMultiplier * formatMultiplier) + bindingCost;
-            let totalPrice = priceForOneCopy * quantity;
-            
-            totalPriceDisplay.textContent = totalPrice.toFixed(2) + ' € TTC';
+            const prompt = `لخص لي النص التالي من اتفاقية الشراكة في نقاط رئيسية باللغة العربية. النص: ${sectionText}`;
+            await callGeminiAPI(prompt, summaryOutputElement, summaryOutputArea);
         }
+
     </script>
 </body>
 </html>
